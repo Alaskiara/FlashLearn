@@ -19,6 +19,12 @@ header {
     text-align: center;
 }
 
+.login-button {
+    display: flex;
+    justify-content: right;
+    margin: 10px;
+}
+
 main {
     display: flex;
     flex-direction: column;
