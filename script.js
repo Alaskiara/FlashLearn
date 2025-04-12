@@ -36,10 +36,28 @@ cardButton.addEventListener("click", (submitQuestion = () => {
             errorMessage.classList.remove("hide");
         } else {
             container.classList.remove("hide");
-            error.errorMessage.classList.add("hide");
+            errorMessage.classList.add("hide");
             viewList();
             question.value = "";
             answer.value = "";
         }
     })
 );
+
+// Create Flashcard
+function viewList() {
+    var listCard = document.getElementsByClassName("card-list-container");
+    var div = document.createElement("div");
+    div.classList.add("card");
+    // Question
+    div.innerHTML += `
+    <p class="question-div">${question.value}</p>`;
+    // Answer
+    var displayAnswer = document.createElement("p");
+    displayAnswer.classList.add("answer-div");
+    displayAnswer.innerText = answer.value;
+    div.appendChild(displayAnswer);
+
+    listCard[0].appendChild(div);
+    hideQuestion();
+}
