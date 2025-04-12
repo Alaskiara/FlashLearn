@@ -99,6 +99,15 @@ button {
     margin-bottom: 1em;
 }
 
+.error-con {
+    align-self: center;
+}
+
+#error{
+    color: red;
+    font-weight: 400;
+}
+
 .fa-xmark {
     font-size: 1.4em;
     background-color: #4cadaf;

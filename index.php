@@ -11,6 +11,7 @@
 <body>
     <header>
         <h1>FlashLearn</h1>
+        <a class="login-button" href="login.php"><h4>Log in/Sign up</h4></a>
     </header>
 
     <main>
@@ -27,15 +28,21 @@
         <div class="question-container hide" id="add-question-card">
             <h2>Add Flashcard</h2>
             <div class="wrapper">
+                <!-- Error Message -->
+                <div class="error-con">
+                    <span class="hide" id="error">Input fields cannot be empty!</span>
+                 </div>
                 <!-- Close Button -->
                 <i class="fa-solid fa-xmark" id="close-btn"></i>
             </div>
+
             <label for="kategorie">Kategorie:</label>
             <select name="kategorie" id="kategorie">
                 <?php
                     include 'kategorie.php'
                 ?>
             </select>
+            
             <label for="question">Question:</label>
             <textarea class="input" id="question" placeholder="Type question here..." rows="2"></textarea>
             <label for="answer">Answer:</label>
