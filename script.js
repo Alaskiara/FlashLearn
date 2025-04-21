@@ -20,7 +20,7 @@ addQuestion.addEventListener("click", () => {
 closeBtn.addEventListener("click", (hideQuestion = () => {
     container.classList.remove("hide");
     addQuestionCard.classList.add("hide");
-    if(editBool){
+    if (editBool) {
         editBool = false;
         submitQuestion();
     }
@@ -50,14 +50,69 @@ function viewList() {
     var div = document.createElement("div");
     div.classList.add("card");
     // Question
-    div.innerHTML += `
-    <p class="question-div">${question.value}</p>`;
+    div.innerHTML += `<p class="question-div">${question.value}</p>`;
     // Answer
     var displayAnswer = document.createElement("p");
-    displayAnswer.classList.add("answer-div");
+    displayAnswer.classList.add("answer-div", "hide");
     displayAnswer.innerText = answer.value;
-    div.appendChild(displayAnswer);
+  
+// Show/Hide answer
+var link = document.createElement("a");
+link.setAttribute("href", "#");
+link.setAttribute("class", "show-hide-btn");
+link.innerHTML = "Show/Hide";
+link.addEventListener("click", () => {
+    displayAnswer.classList.toggle("hide");
+});
 
-    listCard[0].appendChild(div);
-    hideQuestion();
+div.appendChild(link);
+div.appendChild(displayAnswer);
+
+// Edit button
+let buttonsCon = document.createElement("div");
+buttonsCon.classList.add("buttons-con");
+var editButton = document.createElement("button");
+editButton.setAttribute("class", "edit");
+editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
+editButton.addEventListener("click", () => {
+  editBool = true;
+  modifyElement(editButton, true);
+  addQuestionCard.classList.remove("hide");
+});
+buttonsCon.appendChild(editButton);
+disableButtons(false);
+
+// Delete Button
+var deleteButton = document.createElement("button");
+deleteButton.setAttribute("class", "delete");
+deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+deleteButton.addEventListener("click", () => {
+  modifyElement(deleteButton);
+});
+buttonsCon.appendChild(deleteButton);
+
+div.appendChild(buttonsCon);
+listCard[0].appendChild(div);
+hideQuestion();
 }
+
+// Modify Elements
+const modifyElement = (element, edit = false) => {
+  let parentDiv = element.parentElement.parentElement;
+  let parentQuestion = parentDiv.querySelector(".question-div").innerText;
+  if (edit) {
+    let parentAns = parentDiv.querySelector(".answer-div").innerText;
+    answer.value = parentAns;
+    question.value = parentQuestion;
+    disableButtons(true);
+  }
+  parentDiv.remove();
+};
+
+// Disable edit and delete buttons
+const disableButtons = (value) => {
+  let editButtons = document.getElementsByClassName("edit");
+  Array.from(editButtons).forEach((element) => {
+    element.disabled = value;
+  });
+};
