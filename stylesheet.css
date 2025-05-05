@@ -36,7 +36,6 @@ main {
 .container {
     width: 90vw;
     max-width: 62.5em;
-    border: 1px solid black;
     position: relative;
     margin: auto;
 }
@@ -63,14 +62,12 @@ button {
 }
 
 #card-con {
-    border: 1px solid black;
     margin-top: 1em;
 }
 
 .question-container {
     width: 90vw;
     max-width: 34em;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -152,6 +149,88 @@ textarea:focus {
     padding: 0.6em 0;
     border-radius: 0.3em;
     font-weight: 600;
+}
+
+.card-list-container {
+    display: grid;
+    padding: 0.2em;
+    gap: 1.5em;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.card {
+    background-color: white;
+    box-shadow: 0 0.4em 1.2em black;
+    padding: 1.2em;
+    border-radius: 0.4em;
+}
+
+.question-div,
+.answer-div {
+    text-align: justify;
+}
+
+.question-div {
+    margin-bottom: 0.5em;
+    font-weight: 500;
+    color: black;
+}
+
+.answer-div {
+    margin-top: 1em;
+    font-weight: 400;
+    color: #414a67;
+}
+
+.show-hide-btn {
+    display: block;
+    background-color: #4cadaf;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    padding: 0.6em 0;
+    border-radius: 0.3em;
+}
+
+.buttons-con {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.edit,
+.delete {
+    background-color: transparent;
+    padding: 0.5em;
+    font-size: 1.2em;
+}
+
+.edit {
+    color: #4cadaf;
+}
+
+.delete {
+    color: #ff5353;
+}
+
+.hide {
+    display: none;
+}
+
+@media screen and (max-width: 800px) {
+    .card-list-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8em;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    body {
+        font-size: 14px;
+    }
+    .card-list-container {
+        grid-template-columns: 1fr;
+        gap: 1.2em;
+    }
 }
 
 .hide {
