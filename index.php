@@ -15,6 +15,7 @@
         <div class="container">
             <div class="add-flashcard-con">
                 <button id="add-flashcard">Add Flashcard</button>
+                <button id="toggle-view-btn" class="hide">Show All</button>
             </div>
 
             <div id="card-con">
