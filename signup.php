@@ -53,10 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-  <header>
-    <h1>FlashLearn</h1>
-    <a class="login-button" href="login.php"><h4>Log in/Sign up</h4></a>
-  </header>
+  <?php include 'header.php'; ?>
   <main>
   <div class="signup-container">
     <h1>Sign up</h1>

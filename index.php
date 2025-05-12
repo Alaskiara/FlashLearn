@@ -9,10 +9,7 @@
     <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-    <header>
-        <h1>FlashLearn</h1>
-        <a class="login-button" href="login.php"><h4>Log in/Sign up</h4></a>
-    </header>
+    <?php include 'header.php'; ?>
 
     <main>
         <div class="container">
