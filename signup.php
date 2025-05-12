@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
+  <title>Sign up</title>
   <link rel="stylesheet" href="stylesheet.css">
   <style>
     body {
@@ -15,7 +15,7 @@
       height: 100vh;
     }
 
-    .login-container {
+    .signup-container {
       background-color: white;
       padding: 2rem;
       border-radius: 8px;
@@ -23,13 +23,13 @@
       width: 300px;
     }
 
-    .login-container h2 {
+    .signup-container h2 {
       text-align: center;
       margin-bottom: 1.5rem;
     }
 
-    .login-container input[type="text"],
-    .login-container input[type="password"] {
+    .signup-container input[type="text"],
+    .signup-container input[type="password"] {
       width: 100%;
       padding: 0.5rem;
       margin: 0.5rem 0;
@@ -37,7 +37,7 @@
       border-radius: 4px;
     }
 
-    .login-container input[type="submit"] {
+    .signup-container input[type="submit"] {
       width: 100%;
       padding: 0.5rem;
       background-color: #4CAF50;
@@ -48,7 +48,7 @@
       margin-top: 1rem;
     }
 
-    .login-container input[type="submit"] {
+    .signup-container input[type="submit"] {
       background-color: #4cadaf;
     }
   </style>
@@ -58,15 +58,15 @@
     <h1>FlashLearn</h1>
     <a class="login-button" href="login.php"><h4>Log in/Sign up</h4></a>
   </header>
-  <div class="login-container">
-    <h1>Login</h1>
+  <div class="signup-container">
+    <h1>Sign up</h1>
     <form method="post">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required />
       <label for="password">Password</label>
       <input type="password" id="password" name="password" required />
-      <a href="signup.php">Don't have an user yet? Sign up here!</a>
-      <input type="submit" value="Login" />
+      <a href="login.php">Already have an user? Login here!</a>
+      <input type="submit" value="Signup" />
     </form>
   </div>
 </body>
