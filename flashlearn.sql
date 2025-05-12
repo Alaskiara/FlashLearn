@@ -55,7 +55,7 @@ CREATE TABLE `kategorie` (
 CREATE TABLE `user` (
   `User_ID` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `passwort` varchar(50) NOT NULL,
+  `passwort` varchar(255) NOT NULL,
   `punkte` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
