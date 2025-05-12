@@ -61,6 +61,17 @@ button {
     border-radius: 0.4em;
 }
 
+#toggle-view-btn {
+    font-size: 1em;
+    background-color: #4cadaf;
+    color: white;
+    padding: 0.8em 1.2em;
+    font-weight: 500;
+    border-radius: 0.4em;
+    margin-left: 1em;
+    cursor: pointer;
+}
+
 #card-con {
     margin-top: 1em;
 }
@@ -158,6 +169,17 @@ textarea:focus {
     grid-template-columns: 1fr 1fr 1fr;
 }
 
+.card-list-container.single-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.card-list-container.single-card .card {
+    margin: 0;
+}
+
 .card {
     background-color: white;
     box-shadow: 0 0.4em 1.2em black;
@@ -183,13 +205,20 @@ textarea:focus {
 }
 
 .show-hide-btn {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #4cadaf;
     color: white;
     text-decoration: none;
-    text-align: center;
-    padding: 0.6em 0;
     border-radius: 0.3em;
+    width: 120px;
+    height: 40px;
+    font-size: 0.9em;
+    margin: 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
 }
 
 .buttons-con {
