@@ -1,4 +1,5 @@
 <?php
+session_start();
 $meldung = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
 {

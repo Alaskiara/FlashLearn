@@ -1,4 +1,5 @@
 <?php
+session_start();
 $meldung = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
@@ -63,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <main>
   <div class="login-container">
     <h1>Login</h1>
-    <form method="post">
+    <form method="post" action="login.php">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" required />
       <label for="password">Password</label>
