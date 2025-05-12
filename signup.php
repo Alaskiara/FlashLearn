@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
       <input type="password" id="password" name="password" required />
       <a href="login.php">Already have an user? Login here!</a>
       <input type="submit" value="Signup" />
-      <?php if (!empty($meldung)) echo "<p style='color:red;'>$meldung</p>"; ?>
+      <?php if (!empty($meldung)) echo "<p>$meldung</p>"; ?>
     </form>
   </div>
 </body>
