@@ -68,7 +68,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Change password-Flashlearn</title>
-        <link rel="stylesheet" href="stylesheet.css">
+        <link rel="stylesheet" href="assets/css/stylesheet.css">
     </head>
     <body>
         <div class="password-change-container">

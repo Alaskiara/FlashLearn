@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -9,10 +13,7 @@
     <link rel="stylesheet" href="assets/css/stylesheet.css">
 </head>
 <body>
-    <header>
-        <h1>FlashLearn</h1>
-        <a class="login-button" href="templates/login.php"><h4>Log in/Sign up</h4></a>
-    </header>
+    <?php include 'header.php'; ?>
 
     <main>
         <div class="container">
@@ -30,7 +31,7 @@
             <h2>Add Flashcard</h2>
             <div class="wrapper">
                 <!-- Error Message -->
-                 <div class="error-con">
+                <div class="error-con">
                     <span class="hide" id="error">Input fields cannot be empty!</span>
                  </div>
                 <!-- Close Button -->
@@ -39,6 +40,9 @@
 
             <label for="kategorie">Kategorie:</label>
             <select name="kategorie" id="kategorie">
+                <?php
+                    include 'kategorie.php'
+                ?>
             </select>
             
             <label for="question">Question:</label>
