@@ -224,13 +224,23 @@ textarea:focus {
 .buttons-con {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 0.2em;
 }
 
 .edit,
-.delete {
+.delete,
+.nav-btn {
     background-color: transparent;
     padding: 0.5em;
     font-size: 1.2em;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .edit {
@@ -239,6 +249,16 @@ textarea:focus {
 
 .delete {
     color: #ff5353;
+}
+
+.nav-btn {
+    color: #4cadaf;
+    transition: background 0.2s;
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .hide {

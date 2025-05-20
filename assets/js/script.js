@@ -10,6 +10,9 @@ const toggleViewBtn = document.getElementById("toggle-view-btn");
 let editBool = false;
 let showAll = false;
 
+// Global variable to track the current card index
+let currentCardIndex = 0;
+
 // Add question
 addQuestion.addEventListener("click", () => {
     container.classList.add("hide");
@@ -78,12 +81,26 @@ toggleViewBtn.addEventListener("click", () => {
     if (showAll) {
         showLastCard();
         toggleViewBtn.textContent = "Show All";
+        showCardNavigationButtons(true);
     } else {
         showAllCards();
         toggleViewBtn.textContent = "Show Last";
+        showCardNavigationButtons(false);
     }
     showAll = !showAll;
 });
+
+// Shows/Hides Previous/Next buttons on each flashcard, depending on the 'show' parameter and the currentCardIndex.
+function showCardNavigationButtons(show) {
+    const cardListContainer = document.querySelector(".card-list-container");
+    const cards = cardListContainer.querySelectorAll(".card");
+    cards.forEach(card => {
+        const prevBtn = card.querySelector(".card-prev-btn");
+        const nextBtn = card.querySelector(".card-next-btn");
+        if (prevBtn) prevBtn.style.display = show && currentCardIndex > 0 ? "inline-block" : "none";
+        if (nextBtn) nextBtn.style.display = show && currentCardIndex < cards.length - 1 ? "inline-block" : "none";
+    });
+}
 
 // Show the button when the first flashcard is added
 function showToggleButton() {
@@ -92,7 +109,23 @@ function showToggleButton() {
     }
 }
 
-// Create Flashcard
+// Updates the flashcard navigation: shows only current card and displays the Previous/Next buttons on the current card if navigation is possible (not at the first or last card).
+function updateCardNavigation() {
+    const cardListContainer = document.querySelector(".card-list-container");
+    const cards = cardListContainer.querySelectorAll(".card");
+    cards.forEach((card, idx) => {
+        card.style.display = idx === currentCardIndex ? "block" : "none";
+        // Show/hide navigation buttons on the current card
+        const prevBtn = card.querySelector(".card-prev-btn");
+        const nextBtn = card.querySelector(".card-next-btn");
+        if (prevBtn) prevBtn.style.display = (idx === currentCardIndex && currentCardIndex > 0) ? "inline-block" : "none";
+        if (nextBtn) nextBtn.style.display = (idx === currentCardIndex && currentCardIndex < cards.length - 1) ? "inline-block" : "none";
+    });
+    if (cards.length > 0) {
+        cardListContainer.classList.add("single-card");
+    }
+}
+
 function viewList() {
     var listCard = document.getElementsByClassName("card-list-container");
     var div = document.createElement("div");
@@ -111,16 +144,46 @@ function viewList() {
     link.innerHTML = "Show"; // "Show" by default
     link.addEventListener("click", () => {
         displayAnswer.classList.toggle("hide");
-        // Change the button text based on the visibility of the answer
         link.innerHTML = displayAnswer.classList.contains("hide") ? "Show" : "Hide";
     });
 
     div.appendChild(link);
     div.appendChild(displayAnswer);
 
-    // Edit button
+    // Buttons-Container
     let buttonsCon = document.createElement("div");
     buttonsCon.classList.add("buttons-con");
+
+    // Navigation Buttons (Previous/Next)
+    let cardPrevBtn = document.createElement("button");
+    cardPrevBtn.setAttribute("class", "card-prev-btn nav-btn");
+    cardPrevBtn.innerHTML = `<i class="fa-solid fa-angle-left"></i>`;
+    cardPrevBtn.title = "Previous";
+    cardPrevBtn.style.display = "none";
+    cardPrevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (currentCardIndex > 0) {
+            currentCardIndex--;
+            updateCardNavigation();
+        }
+    });
+
+    let cardNextBtn = document.createElement("button");
+    cardNextBtn.setAttribute("class", "card-next-btn nav-btn");
+    cardNextBtn.innerHTML = `<i class="fa-solid fa-angle-right"></i>`;
+    cardNextBtn.title = "Next";
+    cardNextBtn.style.display = "none";
+    cardNextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const cardListContainer = document.querySelector(".card-list-container");
+        const cards = cardListContainer.querySelectorAll(".card");
+        if (currentCardIndex < cards.length - 1) {
+            currentCardIndex++;
+            updateCardNavigation();
+        }
+    });
+
+    // Edit button
     var editButton = document.createElement("button");
     editButton.setAttribute("class", "edit");
     editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
@@ -129,17 +192,29 @@ function viewList() {
         modifyElement(editButton, true);
         addQuestionCard.classList.remove("hide");
     });
-    buttonsCon.appendChild(editButton);
-    disableButtons(false);
 
     // Delete Button
     var deleteButton = document.createElement("button");
     deleteButton.setAttribute("class", "delete");
     deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
     deleteButton.addEventListener("click", () => {
+        const cardListContainer = document.querySelector(".card-list-container");
+        const cards = cardListContainer.querySelectorAll(".card");
         modifyElement(deleteButton);
+        const newCards = cardListContainer.querySelectorAll(".card");
+        if (currentCardIndex > newCards.length - 1) {
+            currentCardIndex = Math.max(0, newCards.length - 1);
+        }
+        updateCardNavigation();
     });
+
+    // Buttons in order: Prev, Next, Edit, Delete
+    buttonsCon.appendChild(cardPrevBtn);
+    buttonsCon.appendChild(cardNextBtn);
+    buttonsCon.appendChild(editButton);
     buttonsCon.appendChild(deleteButton);
+
+    disableButtons(false);
 
     div.appendChild(buttonsCon);
     listCard[0].appendChild(div);
@@ -147,7 +222,11 @@ function viewList() {
     showToggleButton();
 
     hideQuestion();
-    showLastCard();
+
+    // Always show the last added card
+    const cardListContainer = document.querySelector(".card-list-container");
+    currentCardIndex = cardListContainer.querySelectorAll(".card").length - 1;
+    updateCardNavigation();
 }
 
 // Modify Elements
