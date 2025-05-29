@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include 'includes/header.php'; ?>
 
     <main>
         <div>

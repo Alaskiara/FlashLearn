@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $user;
             header("Location: index.php");
-            exit;
+            // exit;
         } 
         else 
         {
@@ -57,10 +57,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
-  <link rel="stylesheet" href="assets/css/stylesheet.css">
+  <link rel="stylesheet" href="../assets/css/stylesheet.css">
 </head>
 <body>
-  <?php include 'header.php'; ?>
+  <header>
+  <?php include '../includes/header.php'; ?>
+  </header>
   <main>
   <div class="login-container">
     <h1>Login</h1>
@@ -71,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
       <input type="password" id="password" name="password" required />
       <a href="signup.php">Don't have an user yet? Sign up here!</a>
       <input type="submit" value="Login" />
+      <?php if (!empty($meldung)) echo "<p>$meldung</p>"; ?>
     </form>
   </div>
   </main>

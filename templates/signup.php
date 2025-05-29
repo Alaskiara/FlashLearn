@@ -51,10 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign up</title>
-  <link rel="stylesheet" href="assets/css/stylesheet.css">
+  <link rel="stylesheet" href="../assets/css/stylesheet.css">
 </head>
 <body>
-  <?php include 'header.php'; ?>
+  <header>
+  <?php include '../includes/header.php'; ?>
+  </header>
   <main>
   <div class="signup-container">
     <h1>Sign up</h1>

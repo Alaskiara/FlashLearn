@@ -10,10 +10,10 @@ session_start();
     <title>FlashLearn</title>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"/>
-    <link rel="stylesheet" href="assets/css/stylesheet.css">
+    <link rel="stylesheet" href="../assets/css/stylesheet.css">
 </head>
 <body>
-    <?php include 'header.php'; ?>
+    <?php include '../includes/header.php'; ?>
 
     <main>
         <div class="container">
@@ -51,7 +51,7 @@ session_start();
             <textarea class="input" id="answer" rows="4" placeholder="Type answer here..."></textarea>
             <button id="save-btn">Save</button>
         </div>
-        <script src="assets/js/script.js"></script>
+        <script src="../assets/js/script.js"></script>
     </main>
 
 </body>
