@@ -1,10 +1,6 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "flashlearn");
+require_once(__DIR__ . '/../config/dbaccess.php');
 
-if ($conn->connect_error) 
-{
-    die("Verbindung fehlgeschlagen: " . $conn->connect_error);
-}
 $sql = "SELECT Bezeichnung FROM Kategorie";
 $result = $conn->query($sql);
 

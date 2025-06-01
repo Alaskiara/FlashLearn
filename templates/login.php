@@ -4,17 +4,7 @@ $meldung = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
 {
-    $servername = "localhost";
-    $dbuser = "root";
-    $dbpass = "";
-    $dbname = "flashlearn";
-
-    $conn = new mysqli($servername, $dbuser, $dbpass, $dbname);
-
-    if ($conn->connect_error) 
-    {
-        die("Verbindung fehlgeschlagen: " . $conn->connect_error);
-    }
+    require_once("../config/dbaccess.php");
 
     $user = $_POST['username'];
     $pass = $_POST['password'];
@@ -33,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         {
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $user;
-            header("Location: index.php");
+            header("Location: ../index.php");
             // exit;
         } 
         else 

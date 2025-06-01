@@ -33,7 +33,7 @@
         }
 
         if (!$err) {
-            require_once('config/dbaccess.php');
+            require_once('../config/dbaccess.php');
             $db_obj = new mysqli($host, $user, $password, $database);
             if ($db_obj->connect_error) {
                 $dbErr = "Connection error: " . $db_obj->connect_error;

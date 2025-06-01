@@ -3,15 +3,7 @@ session_start();
 $meldung = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") 
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "flashlearn";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    if ($conn->connect_error) {
-        die("Verbindung fehlgeschlagen: " . $conn->connect_error);
-    }
+    require_once("../config/dbaccess.php");
 
     $user = $_POST['username'];
     $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);

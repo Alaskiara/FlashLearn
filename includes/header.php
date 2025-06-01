@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="assets/css/stylesheet.css">
+<link rel="stylesheet" href="../assets/css/stylesheet.css">
 <header>
-  <h1>FlashLearn</h1>
+  <h1><a href="../index.php" class="logo-link">FlashLearn</a></h1>
 
   <?php if (isset($_SESSION['username'])): ?>
     <div class="login-info">
