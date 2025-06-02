@@ -33,21 +33,97 @@ closeBtn.addEventListener("click", (hideQuestion = () => {
 );
 
 // Save Flashcard
-cardButton.addEventListener("click", (submitQuestion = () => {
-        editBool = false;
-        tempQuestion = question.value.trim();
-        tempAnswer = answer.value.trim();
-        if (!tempQuestion || !tempAnswer) {
-            errorMessage.classList.remove("hide");
-        } else {
-            container.classList.remove("hide");
-            errorMessage.classList.add("hide");
-            viewList();
-            question.value = "";
-            answer.value = "";
-        }
-    })
-);
+// cardButton.addEventListener("click", (submitQuestion = () => {
+//         editBool = false;
+//         tempQuestion = question.value.trim();
+//         tempAnswer = answer.value.trim();
+//         if (!tempQuestion || !tempAnswer) {
+//             errorMessage.classList.remove("hide");
+//         } else {
+//             container.classList.remove("hide");
+//             errorMessage.classList.add("hide");
+//             viewList();
+//             question.value = "";
+//             answer.value = "";
+//         }
+//     const frage = document.getElementById("question").value.trim();
+//     const antwort = document.getElementById("answer").value.trim();
+//     const kategorie = document.getElementById("kategorie").value;
+
+//     const errorEl = document.getElementById("error");
+
+//     if (!frage || !antwort || !kategorie) {
+//         errorEl.classList.remove("hide");
+//         errorEl.textContent = "Input fields cannot be empty!";
+//         return;
+//     }
+
+//     fetch('../../templates/save_card.php', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/x-www-form-urlencoded'
+//         },
+//         body: `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.status === "success") {
+//             alert("Flashcard saved!");
+//             location.reload(); // Seite neu laden, damit neue Karte angezeigt wird
+//         } else {
+//             errorEl.classList.remove("hide");
+//             errorEl.textContent = "Error saving card: " + data.message;
+//         }
+//     })
+//     .catch(error => {
+//         errorEl.classList.remove("hide");
+//         errorEl.textContent = "Unexpected error: " + error;
+//     });
+//     })
+// );
+
+function submitQuestion() {
+    const frage = document.getElementById("question").value.trim();
+    const antwort = document.getElementById("answer").value.trim();
+    const kategorie = document.getElementById("kategorie").value;
+    const errorEl = document.getElementById("error");
+
+    if (!frage || !antwort || !kategorie) {
+        errorEl.classList.remove("hide");
+        errorEl.textContent = "Input fields cannot be empty!";
+        return;
+    }
+
+    if (isLoggedIn) {
+        fetch('templates/save_card.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                location.reload();
+            } else {
+                errorEl.classList.remove("hide");
+                errorEl.textContent = "Error saving card: " + data.message;
+            }
+        })
+        .catch(error => {
+            errorEl.classList.remove("hide");
+            errorEl.textContent = "Unexpected error: " + error;
+        });
+    } else {
+        viewList();
+        container.classList.remove("hide");
+        addQuestionCard.classList.add("hide");
+    }
+}
+
+cardButton.addEventListener("click", submitQuestion);
+
 
 // Function to show only the last flashcard
 function showLastCard() {

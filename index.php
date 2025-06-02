@@ -64,7 +64,7 @@ if (isset($_SESSION['user_id'])) {
                         <!-- <p>Du hast noch keine Flashcards.</p> -->
                     <?php else: ?>
                         <?php foreach ($flashcards as $index => $card): ?>
-                            <div class="card" style="<?= $index === 0 ? '' : 'display: none;' ?>">
+                            <div class="card">
                                 <p class="question-div"><?= htmlspecialchars($card['Frage']) ?></p>
 
                                 <a href="#" class="show-hide-btn">Show</a>
@@ -115,6 +115,9 @@ if (isset($_SESSION['user_id'])) {
         
     </main>
     <script src="assets/js/script.js"></script>
+    <script>
+        const isLoggedIn = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+    </script>
 </body>
 
 </html>
