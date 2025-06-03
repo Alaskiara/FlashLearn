@@ -3,12 +3,15 @@ const addQuestionCard = document.getElementById("add-question-card");
 const cardButton = document.getElementById("save-btn");
 const question = document.getElementById("question");
 const answer = document.getElementById("answer");
+const category = document.getElementById("kategorie");
 const errorMessage = document.getElementById("error");
 const addQuestion = document.getElementById("add-flashcard");
 const closeBtn = document.getElementById("close-btn");
 const toggleViewBtn = document.getElementById("toggle-view-btn");
+const editBtn = document.getElementById("edit");
 let editBool = false;
 let showAll = false;
+let cardID = null;
 
 // Global variable to track the current card index
 let currentCardIndex = 0;
@@ -25,12 +28,34 @@ addQuestion.addEventListener("click", () => {
 closeBtn.addEventListener("click", (hideQuestion = () => {
     container.classList.remove("hide");
     addQuestionCard.classList.add("hide");
-    if (editBool) {
-        editBool = false;
-        submitQuestion();
-    }
+    // if (editBool) {
+    //     editBool = false;
+    //     submitQuestion();
+    // }
+    editBool = false;
+    cardID = null;
 })
 );
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".edit").forEach(editButton => {
+        editButton.addEventListener("click", () => {
+            const cardElement = editButton.closest(".card");
+            const frage = cardElement.querySelector(".question-div").innerText.trim();
+            const antwort = cardElement.querySelector(".answer-div").innerText.trim();
+            const kategorieID = cardElement.dataset.kategorieId;
+            cardID = cardElement.dataset.id;
+
+            question.value = frage;
+            answer.value = antwort;
+            category.value = kategorieID;
+
+            addQuestionCard.classList.remove("hide");
+            container.classList.add("hide");
+            editBool = true;
+        });
+    });
+});
 
 // Save Flashcard
 // cardButton.addEventListener("click", (submitQuestion = () => {
@@ -95,26 +120,34 @@ function submitQuestion() {
     }
 
     if (isLoggedIn) {
-        fetch('templates/save_card.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                location.reload();
-            } else {
-                errorEl.classList.remove("hide");
-                errorEl.textContent = "Error saving card: " + data.message;
-            }
-        })
-        .catch(error => {
+    const endpoint = editBool ? 'templates/update_card.php' : 'templates/save_card.php';
+    const payload = editBool 
+        ? `card_id=${encodeURIComponent(cardID)}&frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
+        : `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`;
+
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: payload
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            location.reload();
+        } else {
             errorEl.classList.remove("hide");
-            errorEl.textContent = "Unexpected error: " + error;
-        });
+            errorEl.textContent = "Error: " + data.message;
+        }
+    })
+    .catch(error => {
+        errorEl.classList.remove("hide");
+        errorEl.textContent = "Unexpected error: " + error;
+    });
+
+    editBool = false;
+    cardID = null;
     } else {
         viewList();
         container.classList.remove("hide");
@@ -206,6 +239,7 @@ function viewList() {
     var listCard = document.getElementsByClassName("card-list-container");
     var div = document.createElement("div");
     div.classList.add("card");
+    div.setAttribute("data-kategorie", category.value);
     // Question
     div.innerHTML += `<p class="question-div">${question.value}</p>`;
     // Answer
