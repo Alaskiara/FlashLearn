@@ -1,10 +1,9 @@
 <?php
 session_start();
-header('Content-Type: application/json');
 require_once("../config/dbaccess.php");
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(["status" => "error", "message" => "Not logged in."]);
+    echo "error:Not logged in.";
     exit;
 }
 
@@ -15,7 +14,7 @@ $antwort = $_POST['antwort'] ?? null;
 $kategorie = $_POST['kategorie'] ?? null;
 
 if (!$card_id || !$frage || !$antwort || !$kategorie) {
-    echo json_encode(["status" => "error", "message" => "Missing fields."]);
+    echo "error:Missing fields.";
     exit;
 }
 
@@ -24,10 +23,11 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssiii", $frage, $antwort, $kategorie, $card_id, $user_id);
 
 if ($stmt->execute()) {
-    echo json_encode(["status" => "success"]);
+    echo "success";
 } else {
-    echo json_encode(["status" => "error", "message" => $stmt->error]);
+    echo "error:" . $stmt->error;
 }
 
 $stmt->close();
 $conn->close();
+?>

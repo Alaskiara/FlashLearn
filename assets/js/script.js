@@ -57,6 +57,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".delete").forEach(deleteButton => {
+        deleteButton.addEventListener("click", () => {
+            const cardElement = deleteButton.closest(".card");
+            const cardId = cardElement.dataset.id;
+
+            const modal = document.getElementById("delete-confirmation-modal");
+            const confirmBtn = document.getElementById("confirm-delete-btn");
+            const cancelBtn = document.getElementById("cancel-delete-btn");
+
+            modal.classList.remove("hide");
+
+            confirmBtn.onclick = () => {
+                fetch("templates/delete_card.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `card_id=${encodeURIComponent(cardId)}`,
+                })
+                .then((res) => res.text())
+                .then((text) => {
+                    if (text.trim() === "success") {
+                        cardElement.remove();
+                        updateCardNavigation();
+                    } else {
+                        console.error('Fehler beim Löschen:', text);
+                    }
+                    modal.classList.add("hide");
+                })
+                .catch((error) => {
+                    console.error('Fetch-Fehler:', error);
+                    modal.classList.add("hide");
+                });
+            };
+
+            cancelBtn.onclick = () => {
+                modal.classList.add("hide");
+            };
+        });
+    });
+});
+
+
 // Save Flashcard
 // cardButton.addEventListener("click", (submitQuestion = () => {
 //         editBool = false;
@@ -126,25 +170,25 @@ function submitQuestion() {
         : `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`;
 
     fetch(endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: payload
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: payload,
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === "success") {
-            location.reload();
+      .then((response) => response.text())
+      .then((text) => {
+        if (text.trim() === "success") {
+          location.reload();
         } else {
-            errorEl.classList.remove("hide");
-            errorEl.textContent = "Error: " + data.message;
+          errorEl.classList.remove("hide");
+          errorEl.textContent = "Error: " + text;
         }
-    })
-    .catch(error => {
+      })
+      .catch((error) => {
         errorEl.classList.remove("hide");
         errorEl.textContent = "Unexpected error: " + error;
-    });
+      });
 
     editBool = false;
     cardID = null;
@@ -308,14 +352,14 @@ function viewList() {
     deleteButton.setAttribute("class", "delete");
     deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
     deleteButton.addEventListener("click", () => {
-        const cardListContainer = document.querySelector(".card-list-container");
-        const cards = cardListContainer.querySelectorAll(".card");
-        modifyElement(deleteButton);
-        const newCards = cardListContainer.querySelectorAll(".card");
-        if (currentCardIndex > newCards.length - 1) {
-            currentCardIndex = Math.max(0, newCards.length - 1);
-        }
-        updateCardNavigation();
+      const cardListContainer = document.querySelector(".card-list-container");
+      const cards = cardListContainer.querySelectorAll(".card");
+      modifyElement(deleteButton);
+      const newCards = cardListContainer.querySelectorAll(".card");
+      if (currentCardIndex > newCards.length - 1) {
+        currentCardIndex = Math.max(0, newCards.length - 1);
+      }
+      updateCardNavigation();
     });
 
     // Buttons in order: Prev, Next, Edit, Delete

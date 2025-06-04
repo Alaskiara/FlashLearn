@@ -118,6 +118,15 @@ if (isset($_SESSION['user_id'])) {
     <script>
         const isLoggedIn = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
     </script>
+    <div id="delete-confirmation-modal" class="modal hide">
+    <div class="modal-content">
+        <p>Möchtest du diese Flashcard wirklich löschen?</p>
+        <div class="modal-buttons">
+            <button id="confirm-delete-btn">Ja</button>
+            <button id="cancel-delete-btn">Nein</button>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

@@ -15,16 +15,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
         $stmt->bind_param("issii", $user_id, $frage, $antwort, $points, $kategorie);
 
         if ($stmt->execute()) {
-            echo json_encode(["status" => "success"]);
+            echo "success";
         } else {
-            echo json_encode(["status" => "error", "message" => $stmt->error]);
+            echo "error:" . $stmt->error;
         }
 
         $stmt->close();
     } else {
-        echo json_encode(["status" => "error", "message" => "Missing fields"]);
+        echo "error:Missing fields";
     }
 } else {
-    echo json_encode(["status" => "unauthorized"]);
+    echo "error:Unauthorized";
 }
 ?>
