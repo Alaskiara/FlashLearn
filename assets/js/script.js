@@ -38,67 +38,82 @@ closeBtn.addEventListener("click", (hideQuestion = () => {
 );
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".edit").forEach(editButton => {
-        editButton.addEventListener("click", () => {
-            const cardElement = editButton.closest(".card");
-            const frage = cardElement.querySelector(".question-div").innerText.trim();
-            const antwort = cardElement.querySelector(".answer-div").innerText.trim();
-            const kategorieID = cardElement.dataset.kategorieId;
-            cardID = cardElement.dataset.id;
+  document.querySelectorAll(".edit").forEach(editButton => {
+      editButton.addEventListener("click", () => {
+          const cardElement = editButton.closest(".card");
+          const frage = cardElement.querySelector(".question-div").innerText.trim();
+          const antwort = cardElement.querySelector(".answer-div").innerText.trim();
+          const kategorieID = cardElement.dataset.kategorieId;
+          cardID = cardElement.dataset.id;
 
-            question.value = frage;
-            answer.value = antwort;
-            category.value = kategorieID;
+          question.value = frage;
+          answer.value = antwort;
+          category.value = kategorieID;
 
-            addQuestionCard.classList.remove("hide");
-            container.classList.add("hide");
-            editBool = true;
-        });
-    });
+          addQuestionCard.classList.remove("hide");
+          container.classList.add("hide");
+          editBool = true;
+      });
+  });
+
+  document.querySelectorAll(".delete").forEach(deleteButton => {
+      deleteButton.addEventListener("click", () => {
+          const cardElement = deleteButton.closest(".card");
+          const cardId = cardElement.dataset.id;
+
+          const modal = document.getElementById("delete-confirmation-modal");
+          const confirmBtn = document.getElementById("confirm-delete-btn");
+          const cancelBtn = document.getElementById("cancel-delete-btn");
+
+          modal.classList.remove("hide");
+
+          confirmBtn.onclick = () => {
+              fetch("templates/delete_card.php", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                  body: `card_id=${encodeURIComponent(cardId)}`,
+              })
+              .then((res) => res.text())
+              .then((text) => {
+                  if (text.trim() === "success") {
+                      cardElement.remove();
+                      updateCardNavigation();
+                  } else {
+                      console.error('Fehler beim Löschen:', text);
+                  }
+                  modal.classList.add("hide");
+              })
+              .catch((error) => {
+                  console.error('Fetch-Fehler:', error);
+                  modal.classList.add("hide");
+              });
+          };
+
+          cancelBtn.onclick = () => {
+              modal.classList.add("hide");
+          };
+      });
+  });
+
+  const cardListContainer = document.querySelector(".card-list-container");
+  cardListContainer.addEventListener("click", (e) => {
+      if (e.target.classList.contains("show-hide-btn")) {
+          e.preventDefault();
+
+          const card = e.target.closest(".card");
+          if (!card) return;
+
+          const answer = card.querySelector(".answer-div");
+          if (!answer) return;
+
+          answer.classList.toggle("hide");
+          e.target.textContent = answer.classList.contains("hide") ? "Show" : "Hide";
+      }
+  });
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".delete").forEach(deleteButton => {
-        deleteButton.addEventListener("click", () => {
-            const cardElement = deleteButton.closest(".card");
-            const cardId = cardElement.dataset.id;
-
-            const modal = document.getElementById("delete-confirmation-modal");
-            const confirmBtn = document.getElementById("confirm-delete-btn");
-            const cancelBtn = document.getElementById("cancel-delete-btn");
-
-            modal.classList.remove("hide");
-
-            confirmBtn.onclick = () => {
-                fetch("templates/delete_card.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: `card_id=${encodeURIComponent(cardId)}`,
-                })
-                .then((res) => res.text())
-                .then((text) => {
-                    if (text.trim() === "success") {
-                        cardElement.remove();
-                        updateCardNavigation();
-                    } else {
-                        console.error('Fehler beim Löschen:', text);
-                    }
-                    modal.classList.add("hide");
-                })
-                .catch((error) => {
-                    console.error('Fetch-Fehler:', error);
-                    modal.classList.add("hide");
-                });
-            };
-
-            cancelBtn.onclick = () => {
-                modal.classList.add("hide");
-            };
-        });
-    });
-});
 
 
 // Save Flashcard

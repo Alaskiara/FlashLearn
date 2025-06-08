@@ -67,7 +67,7 @@ if (isset($_SESSION['user_id'])) {
                             <div class="card" data-id="<?= $card['Card_ID'] ?>" data-kategorie-id="<?= $card['Kategorie_ID'] ?>">
                                 <p class="question-div"><?= htmlspecialchars($card['Frage']) ?></p>
 
-                                <a href="#" class="show-hide-btn">Show</a>
+                                <a class="show-hide-btn">Show</a>
                                 <p class="answer-div hide"><?= nl2br(htmlspecialchars($card['Antwort'])) ?></p>
 
                                 <div class="buttons-con">
