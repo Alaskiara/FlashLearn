@@ -521,3 +521,15 @@ textarea:focus {
     font-weight: 500;
     color: #4cadaf;
 }
+
+.welcome-message .cta-link {
+    color: #4cadaf;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.welcome-message .cta-link:hover {
+    color: #3a9b9c;
+    text-decoration: underline;
+}

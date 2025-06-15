@@ -57,7 +57,7 @@ if (isset($_SESSION['user_id'])) {
                 <h2>Learn Smarter with Digital Flashcards</h2>
                 <p>Welcome to your personal learning companion! With our digital flashcards, you'll make learning more efficient and successful. Whether it's vocabulary, formulas, or facts - create your own flashcards and watch as you'll improve.</p>
                 <p>How it works: Create cards with questions and answers and study at your own pace.</p>
-                <p>Start now and discover how simple effective learning can be!</p>
+                <p><a href="templates/login.php" class="cta-link">Start now and discover how simple effective learning can be!</a></p>
             </div>
         <?php endif; ?>
 
