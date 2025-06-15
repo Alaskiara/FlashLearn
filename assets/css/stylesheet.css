@@ -490,3 +490,34 @@ textarea:focus {
     color: #cc0000;
     font-size: 14px;
 }
+
+.welcome-message {
+    text-align: center;
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 3rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.welcome-message h2 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+.welcome-message p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    color: #505965;
+    font-size: 1.2rem;
+}
+
+.welcome-message p:last-child {
+    margin-bottom: 0;
+    font-weight: 500;
+    color: #4cadaf;
+}

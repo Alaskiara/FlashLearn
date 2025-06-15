@@ -52,11 +52,22 @@ if (isset($_SESSION['user_id'])) {
     </header>
 
     <main>
-        <div class="container">
-            <div class="add-flashcard-con">
-                <button id="add-flashcard">Add Flashcard</button>
-                <button id="toggle-view-btn" class="hide">Show All</button>
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            <div class="welcome-message">
+                <h2>Learn Smarter with Digital Flashcards</h2>
+                <p>Welcome to your personal learning companion! With our digital flashcards, you'll make learning more efficient and successful. Whether it's vocabulary, formulas, or facts - create your own flashcards and watch as you'll improve.</p>
+                <p>How it works: Create cards with questions and answers and study at your own pace.</p>
+                <p>Start now and discover how simple effective learning can be!</p>
             </div>
+        <?php endif; ?>
+
+        <div class="container">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="add-flashcard-con">
+                    <button id="add-flashcard">Add Flashcard</button>
+                    <button id="toggle-view-btn" class="hide">Show All</button>
+                </div>
+            <?php endif; ?>
 
             <div id="card-con">
                 <div class="card-list-container">
