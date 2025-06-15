@@ -2,12 +2,14 @@
 <header>
   <h1><a href="../index.php" class="logo-link">FlashLearn</a></h1>
 
-  <?php if (isset($_SESSION['username'])): ?>
+  <?php 
+  $current_page = basename($_SERVER['PHP_SELF']);
+  if (isset($_SESSION['username'])): ?>
     <div class="login-info">
       <a class="login-button"><h4>Du bist eingeloggt als: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4></a>
       <a class="login-button" href="../templates/logout.php">Logout</a>
     </div>
-  <?php else: ?>
-    <a class="login-button" href="../templates/login.php"><h4>Log in/Sign up</h4></a>
+  <?php elseif ($current_page !== 'login.php' && $current_page !== 'signup.php'): ?>
+    <a class="login-button" href="../templates/login.php"><h4>Login/Sign Up</h4></a>
   <?php endif; ?>
 </header>

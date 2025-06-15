@@ -51,14 +51,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   </header>
   <main>
   <div class="signup-container">
-    <h1>Sign up</h1>
+    <h1>Sign Up</h1>
     <form method="post" action="signup.php" autocomplete="off">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" autocomplete="off" required />
       <label for="password">Password</label>
       <input type="password" id="password" name="password" autocomplete="new-password" required />
       <a href="login.php">Already have a user? Login here!</a>
-      <input type="submit" value="Signup" />
+      <input type="submit" value="Sign Up" />
       <?php if (!empty($meldung)) echo "<p>$meldung</p>"; ?>
     </form>
   </div>

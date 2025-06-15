@@ -46,7 +46,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
         <?php else: ?>
             <a class="login-button" href="templates/login.php">
-                <h4>Log in/Sign up</h4>
+                <h4>Login/Sign Up</h4>
             </a>
         <?php endif; ?>
     </header>
