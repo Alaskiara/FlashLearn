@@ -10,7 +10,7 @@ const closeBtn = document.getElementById("close-btn");
 const toggleViewBtn = document.getElementById("toggle-view-btn");
 const editBtn = document.getElementById("edit");
 let editBool = false;
-let showAll = false;
+let showAll = true;  // Start with showing all cards
 let cardID = null;
 
 // Global variable to track the current card index
@@ -112,6 +112,17 @@ document.addEventListener("DOMContentLoaded", () => {
           e.target.textContent = answer.classList.contains("hide") ? "Show" : "Hide";
       }
   });
+
+    if (isLoggedIn) {
+        // Show all cards initially
+        showAllCards();
+        
+        // Initialize toggle button text
+        const toggleViewBtn = document.getElementById("toggle-view-btn");
+        if (toggleViewBtn) {
+            toggleViewBtn.textContent = "Show Last";
+        }
+    }
 });
 
 
@@ -217,43 +228,56 @@ function submitQuestion() {
 cardButton.addEventListener("click", submitQuestion);
 
 
-// Function to show only the last flashcard
-function showLastCard() {
-    const cardListContainer = document.querySelector(".card-list-container");
-    const cards = cardListContainer.querySelectorAll(".card");
-
-    cards.forEach((card, index) => {
-        card.style.display = index === cards.length - 1 ? "block" : "none";
-    });
-
-    // Add the class 'single-card' if only one card is visible
-    if (cards.length === 1 || cards[cards.length - 1].style.display === "block") {
-        cardListContainer.classList.add("single-card");
-    } else {
-        cardListContainer.classList.remove("single-card");
-    }
-}
-
 // Function to show all flashcards
 function showAllCards() {
     const cardListContainer = document.querySelector(".card-list-container");
     const cards = cardListContainer.querySelectorAll(".card");
-
+    
     cards.forEach((card) => {
         card.style.display = "block";
+        // Hide navigation buttons when showing all cards
+        const prevBtn = card.querySelector(".card-prev-btn");
+        const nextBtn = card.querySelector(".card-next-btn");
+        if (prevBtn) prevBtn.style.display = "none";
+        if (nextBtn) nextBtn.style.display = "none";
+    });
+}
+
+// Function to show only the last flashcard
+function showLastCard() {
+    const cardListContainer = document.querySelector(".card-list-container");
+    const cards = cardListContainer.querySelectorAll(".card");
+    
+    cards.forEach((card, index) => {
+        if (index === cards.length - 1) {
+            card.style.display = "block";
+            currentCardIndex = index;
+            // Show navigation buttons for single card view
+            const prevBtn = card.querySelector(".card-prev-btn");
+            const nextBtn = card.querySelector(".card-next-btn");
+            if (prevBtn) prevBtn.style.display = index > 0 ? "inline-block" : "none";
+            if (nextBtn) nextBtn.style.display = index < cards.length - 1 ? "inline-block" : "none";
+        } else {
+            card.style.display = "none";
+        }
     });
 }
 
 // Toggle between "Show All" and "Show Last"
 toggleViewBtn.addEventListener("click", () => {
+    const cardListContainer = document.querySelector(".card-list-container");
     if (showAll) {
+        // Switch to single card view
         showLastCard();
         toggleViewBtn.textContent = "Show All";
         showCardNavigationButtons(true);
+        cardListContainer.classList.add("single-card");
     } else {
+        // Switch to all cards view
         showAllCards();
         toggleViewBtn.textContent = "Show Last";
         showCardNavigationButtons(false);
+        cardListContainer.classList.remove("single-card");
     }
     showAll = !showAll;
 });

@@ -65,7 +65,9 @@ if (isset($_SESSION['user_id'])) {
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="add-flashcard-con">
                     <button id="add-flashcard">Add Flashcard</button>
-                    <button id="toggle-view-btn" class="hide">Show All</button>
+                    <?php if (isset($_SESSION['user_id']) && count($flashcards) > 0): ?>
+                        <button id="toggle-view-btn">Show Last</button>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
 
