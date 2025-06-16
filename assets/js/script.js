@@ -228,59 +228,88 @@ function submitQuestion() {
 cardButton.addEventListener("click", submitQuestion);
 
 
+// Function to show only the last flashcard
+function showLastCard() {
+    const cardListContainer = document.querySelector(".card-list-container");
+    const cards = Array.from(cardListContainer.querySelectorAll(".card"));
+    
+    if (cards.length === 0) return;
+
+    // Hide all cards first
+    cards.forEach(card => {
+        card.style.display = "none";
+    });
+
+    // Show current card
+    cards[currentCardIndex].style.display = "block";
+
+    // Update navigation buttons
+    cards.forEach((card, index) => {
+        const prevBtn = card.querySelector(".card-prev-btn");
+        const nextBtn = card.querySelector(".card-next-btn");
+
+        if (index === currentCardIndex) {
+            // Only show navigation buttons if there are multiple cards
+            if (prevBtn) {
+                prevBtn.style.display = cards.length > 1 && currentCardIndex > 0 ? "flex" : "none";
+                prevBtn.onclick = () => {
+                    if (currentCardIndex > 0) {
+                        currentCardIndex--;
+                        showLastCard();
+                    }
+                };
+            }
+            if (nextBtn) {
+                nextBtn.style.display = cards.length > 1 && currentCardIndex < cards.length - 1 ? "flex" : "none";
+                nextBtn.onclick = () => {
+                    if (currentCardIndex < cards.length - 1) {
+                        currentCardIndex++;
+                        showLastCard();
+                    }
+                };
+            }
+        }
+    });
+
+    cardListContainer.classList.add("single-card");
+}
+
 // Function to show all flashcards
 function showAllCards() {
     const cardListContainer = document.querySelector(".card-list-container");
     const cards = cardListContainer.querySelectorAll(".card");
     
-    cards.forEach((card) => {
+    cards.forEach(card => {
         card.style.display = "block";
-        // Hide navigation buttons when showing all cards
+        // Always hide navigation buttons when showing all cards
         const prevBtn = card.querySelector(".card-prev-btn");
         const nextBtn = card.querySelector(".card-next-btn");
         if (prevBtn) prevBtn.style.display = "none";
         if (nextBtn) nextBtn.style.display = "none";
     });
-}
 
-// Function to show only the last flashcard
-function showLastCard() {
-    const cardListContainer = document.querySelector(".card-list-container");
-    const cards = cardListContainer.querySelectorAll(".card");
-    
-    cards.forEach((card, index) => {
-        if (index === cards.length - 1) {
-            card.style.display = "block";
-            currentCardIndex = index;
-            // Show navigation buttons for single card view
-            const prevBtn = card.querySelector(".card-prev-btn");
-            const nextBtn = card.querySelector(".card-next-btn");
-            if (prevBtn) prevBtn.style.display = index > 0 ? "inline-block" : "none";
-            if (nextBtn) nextBtn.style.display = index < cards.length - 1 ? "inline-block" : "none";
-        } else {
-            card.style.display = "none";
-        }
-    });
+    cardListContainer.classList.remove("single-card");
 }
 
 // Toggle between "Show All" and "Show Last"
 toggleViewBtn.addEventListener("click", () => {
     const cardListContainer = document.querySelector(".card-list-container");
+    const cards = cardListContainer.querySelectorAll(".card");
+
+    if (cards.length === 0) return;
+
     if (showAll) {
         // Switch to single card view
         showLastCard();
         toggleViewBtn.textContent = "Show All";
-        showCardNavigationButtons(true);
-        cardListContainer.classList.add("single-card");
     } else {
         // Switch to all cards view
         showAllCards();
         toggleViewBtn.textContent = "Show Last";
-        showCardNavigationButtons(false);
-        cardListContainer.classList.remove("single-card");
     }
     showAll = !showAll;
 });
+
 
 // Shows/Hides Previous/Next buttons on each flashcard, depending on the 'show' parameter and the currentCardIndex.
 function showCardNavigationButtons(show) {
