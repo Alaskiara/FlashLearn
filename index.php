@@ -40,7 +40,7 @@ if (isset($_SESSION['user_id'])) {
         <?php if (isset($_SESSION['username'])): ?>
             <div class="login-info">
                 <a class="login-button">
-                    <h4>Du bist eingeloggt als: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4>
+                    <h4>You are logged in as: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4>
                 </a>
                 <a class="login-button" href="templates/logout.php">Logout</a>
             </div>
@@ -112,7 +112,7 @@ if (isset($_SESSION['user_id'])) {
                 <i class="fa-solid fa-xmark" id="close-btn"></i>
             </div>
 
-            <label for="kategorie">Kategorie:</label>
+            <label for="kategorie">Category:</label>
             <select name="kategorie" id="kategorie">
                 <?php
                 include 'templates/kategorie.php'
@@ -133,10 +133,10 @@ if (isset($_SESSION['user_id'])) {
     </script>
     <div id="delete-confirmation-modal" class="modal hide">
     <div class="modal-content">
-        <p>Möchtest du diese Flashcard wirklich löschen?</p>
+        <p>Are you sure you want to delete this flashcard?</p>
         <div class="modal-buttons">
-            <button id="confirm-delete-btn">Ja</button>
-            <button id="cancel-delete-btn">Nein</button>
+            <button id="confirm-delete-btn">Yes</button>
+            <button id="cancel-delete-btn">No</button>
         </div>
     </div>
 </div>
