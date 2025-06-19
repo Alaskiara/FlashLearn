@@ -123,6 +123,167 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleViewBtn.textContent = "Show Last";
         }
     }
+
+    // Category Modal Functionality
+    const addCategoryBtn = document.getElementById("add-category");
+    const categoryModal = document.getElementById("category-modal");
+    const saveCategoryBtn = document.getElementById("save-category");
+    const cancelCategoryBtn = document.getElementById("cancel-category");
+    const categoryInput = document.getElementById("category-name");
+
+    if (addCategoryBtn) {
+        addCategoryBtn.addEventListener("click", () => {
+            console.log("Add Category clicked");
+            categoryModal.classList.remove("hide");
+            categoryInput.value = "";
+        });
+    }
+
+    if (cancelCategoryBtn) {
+        cancelCategoryBtn.addEventListener("click", () => {
+            categoryModal.classList.add("hide");
+        });
+    }
+
+    if (saveCategoryBtn) {
+        saveCategoryBtn.addEventListener("click", () => {
+            const categoryName = categoryInput.value.trim();
+            if (!categoryName) {
+                alert("Please enter a category name");
+                return;
+            }
+
+            fetch("templates/save_category.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `name=${encodeURIComponent(categoryName)}`,
+            })
+            .then(response => response.text())
+            .then(text => {
+                if (text.startsWith("success:")) {
+                    location.reload();
+                } else {
+                    alert("Error creating category: " + text);
+                }
+            });
+        });
+    }
+
+    // Category folder handling
+    document.querySelectorAll(".category-folder").forEach(folder => {
+        folder.addEventListener("click", () => {
+            const categoryId = folder.dataset.id;
+            
+            // Toggle active state of folders
+            document.querySelectorAll(".category-folder").forEach(f => {
+                f.classList.remove("active");
+            });
+            folder.classList.add("active");
+            
+            // Show card container
+            const cardCon = document.getElementById("card-con");
+            cardCon.style.display = "block";
+            
+            // Filter cards
+            const cards = document.querySelectorAll(".card");
+            let hasVisibleCards = false;
+            
+            cards.forEach(card => {
+                if (card.dataset.kategorieId === categoryId) {
+                    card.style.display = "block";
+                    hasVisibleCards = true;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            // Show message if no cards in category
+            const noCardsMessage = document.querySelector(".no-cards-message");
+            if (!hasVisibleCards) {
+                if (!noCardsMessage) {
+                    const message = document.createElement("p");
+                    message.className = "no-cards-message";
+                    message.textContent = "No flashcards in this category yet.";
+                    cardCon.appendChild(message);
+                }
+            } else if (noCardsMessage) {
+                noCardsMessage.remove();
+            }
+        });
+    });
+
+    // Show all cards when adding a new card
+    document.getElementById("add-flashcard").addEventListener("click", () => {
+        const cardCon = document.getElementById("card-con");
+        cardCon.style.display = "block";
+        
+        document.querySelectorAll(".category-folder").forEach(f => {
+            f.classList.remove("active");
+        });
+        
+        document.querySelectorAll(".card").forEach(card => {
+            card.style.display = "block";
+        });
+    });
+
+    // Category deletion handling
+    document.querySelectorAll(".delete-category").forEach(deleteBtn => {
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const categoryFolder = deleteBtn.closest(".category-folder");
+            const categoryId = categoryFolder.dataset.id;
+            const cardCount = parseInt(categoryFolder.querySelector(".card-count").textContent.match(/\d+/)[0]);
+            
+            const modal = document.getElementById("delete-category-modal");
+            const warning = document.getElementById("delete-category-warning");
+            
+            if (cardCount > 0) {
+                warning.textContent = "Deleting this category will also delete all of its flashcards, are you sure you want to continue?";
+            } else {
+                warning.textContent = "Are you sure you want to delete this category?";
+            }
+            
+            modal.classList.remove("hide");
+            
+            const confirmBtn = document.getElementById("confirm-category-delete");
+            const cancelBtn = document.getElementById("cancel-category-delete");
+            
+            const deleteHandler = () => {
+                fetch("templates/delete_category.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: `category_id=${categoryId}`,
+                })
+                .then(response => response.text())
+                .then(text => {
+                    if (text === "success") {
+                        location.reload();
+                    } else {
+                        alert("Error deleting category: " + text);
+                    }
+                });
+                
+                // Remove event listeners
+                confirmBtn.removeEventListener("click", deleteHandler);
+                cancelBtn.removeEventListener("click", cancelHandler);
+            };
+            
+            const cancelHandler = () => {
+                modal.classList.add("hide");
+                // Remove event listeners
+                confirmBtn.removeEventListener("click", deleteHandler);
+                cancelBtn.removeEventListener("click", cancelHandler);
+            };
+            
+            // Add event listeners
+            confirmBtn.addEventListener("click", deleteHandler);
+            cancelBtn.addEventListener("click", cancelHandler);
+        });
+    });
 });
 
 

@@ -65,9 +65,35 @@ if (isset($_SESSION['user_id'])) {
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="add-flashcard-con">
                     <button id="add-flashcard">Add Flashcard</button>
-                    <?php if (isset($_SESSION['user_id']) && count($flashcards) > 0): ?>
-                        <button id="toggle-view-btn">Show Last</button>
-                    <?php endif; ?>
+                    <button id="add-category">Add Category</button>
+                    <button id="toggle-view-btn" class="hide">Show Last</button>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="category-folders">
+                    <?php
+                    $sql = "SELECT k.*, COUNT(c.Card_ID) as card_count 
+                            FROM kategorie k 
+                            LEFT JOIN card c ON k.Kategorie_ID = c.Kategorie_ID 
+                            WHERE k.User_ID = ? 
+                            GROUP BY k.Kategorie_ID";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $_SESSION['user_id']);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    while ($category = $result->fetch_assoc()) {
+                        echo '<div class="category-folder" data-id="' . $category['Kategorie_ID'] . '">';
+                        echo '<div class="folder-content">';
+                        echo '<i class="fa-solid fa-folder"></i>';
+                        echo '<span>' . htmlspecialchars($category['Bezeichnung']) . '</span>';
+                        echo '<span class="card-count">(' . $category['card_count'] . ')</span>';
+                        echo '</div>';
+                        echo '<button class="delete-category"><i class="fa-solid fa-trash-can"></i></button>';
+                        echo '</div>';
+                    }
+                    ?>
                 </div>
             <?php endif; ?>
 
@@ -137,6 +163,26 @@ if (isset($_SESSION['user_id'])) {
         <div class="modal-buttons">
             <button id="confirm-delete-btn">Yes</button>
             <button id="cancel-delete-btn">No</button>
+        </div>
+    </div>
+</div>
+<div id="category-modal" class="modal hide">
+    <div class="modal-content">
+        <h3>Add New Category</h3>
+        <input type="text" id="category-name" placeholder="Category name">
+        <div class="modal-buttons">
+            <button id="save-category">Save</button>
+            <button id="cancel-category">Cancel</button>
+        </div>
+    </div>
+</div>
+<div id="delete-category-modal" class="modal hide">
+    <div class="modal-content">
+        <h3>Delete Category</h3>
+        <p id="delete-category-warning"></p>
+        <div class="modal-buttons">
+            <button id="confirm-category-delete">Continue</button>
+            <button id="cancel-category-delete">Cancel</button>
         </div>
     </div>
 </div>
