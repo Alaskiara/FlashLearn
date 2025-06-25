@@ -6,7 +6,7 @@
   $current_page = basename($_SERVER['PHP_SELF']);
   if (isset($_SESSION['username'])): ?>
     <div class="login-info">
-      <a class="login-button"><h4>Du bist eingeloggt als: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4></a>
+      <a class="login-button"><h4>You are logged in as: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4></a>
       <a class="login-button" href="../templates/logout.php">Logout</a>
     </div>
   <?php elseif ($current_page !== 'login.php' && $current_page !== 'signup.php'): ?>

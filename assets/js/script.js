@@ -13,6 +13,9 @@ let editBool = false;
 let showAll = true;  // Start with showing all cards
 let cardID = null;
 
+// Globale Variable für die aktuelle Kategorie
+let currentCategoryId = null;
+
 // Global variable to track the current card index
 let currentCardIndex = 0;
 
@@ -24,16 +27,23 @@ addQuestion.addEventListener("click", () => {
     addQuestionCard.classList.remove("hide");
 });
 
-// Hide "Add Flashcard" (Close Button)
+// Hide "Add Flashcard" (Close Button) - Korrigiert
 closeBtn.addEventListener("click", (hideQuestion = () => {
     container.classList.remove("hide");
     addQuestionCard.classList.add("hide");
-    // if (editBool) {
-    //     editBool = false;
-    //     submitQuestion();
-    // }
     editBool = false;
     cardID = null;
+    
+    // Wiederherstellen der Kategorieansicht wenn eine Kategorie aktiv war
+    if (currentCategoryId !== null) {
+        // Filterung der Karten nach aktueller Kategorie
+        filterCardsByCategory(currentCategoryId);
+    } else {
+        // Wenn keine Kategorie aktiv war, alle Karten anzeigen
+        document.querySelectorAll(".card").forEach(card => {
+            card.style.display = "block";
+        });
+    }
 })
 );
 
@@ -56,10 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
+  // Delete Button Handler - Korrigiert mit Kategorie-Counter Update
   document.querySelectorAll(".delete").forEach(deleteButton => {
       deleteButton.addEventListener("click", () => {
           const cardElement = deleteButton.closest(".card");
           const cardId = cardElement.dataset.id;
+          const categoryId = cardElement.dataset.kategorieId;
 
           const modal = document.getElementById("delete-confirmation-modal");
           const confirmBtn = document.getElementById("confirm-delete-btn");
@@ -79,7 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
               .then((text) => {
                   if (text.trim() === "success") {
                       cardElement.remove();
-                      updateCardNavigation();
+                      
+                      // Kategorie-Counter aktualisieren
+                      updateCategoryCounter(categoryId, -1);
+                      
+                      // Nach dem Löschen die aktuelle Kategorieansicht beibehalten
+                      if (currentCategoryId !== null) {
+                        filterCardsByCategory(currentCategoryId);
+                      }
+                      
+                      // Navigation-Buttons korrekt aktualisieren
+                      updateNavigationAfterDelete();
                   } else {
                       console.error('Fehler beim Löschen:', text);
                   }
@@ -171,10 +193,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Category folder handling
+    // Category folder handling - Erweitert um currentCategoryId Tracking
     document.querySelectorAll(".category-folder").forEach(folder => {
         folder.addEventListener("click", () => {
             const categoryId = folder.dataset.id;
+            currentCategoryId = categoryId; // Aktuelle Kategorie speichern
             
             // Toggle active state of folders
             document.querySelectorAll(".category-folder").forEach(f => {
@@ -186,46 +209,42 @@ document.addEventListener("DOMContentLoaded", () => {
             const cardCon = document.getElementById("card-con");
             cardCon.style.display = "block";
             
-            // Filter cards
-            const cards = document.querySelectorAll(".card");
-            let hasVisibleCards = false;
-            
-            cards.forEach(card => {
-                if (card.dataset.kategorieId === categoryId) {
-                    card.style.display = "block";
-                    hasVisibleCards = true;
-                } else {
-                    card.style.display = "none";
-                }
-            });
-
-            // Show message if no cards in category
-            const noCardsMessage = document.querySelector(".no-cards-message");
-            if (!hasVisibleCards) {
-                if (!noCardsMessage) {
-                    const message = document.createElement("p");
-                    message.className = "no-cards-message";
-                    message.textContent = "No flashcards in this category yet.";
-                    cardCon.appendChild(message);
-                }
-            } else if (noCardsMessage) {
-                noCardsMessage.remove();
-            }
+            filterCardsByCategory(categoryId);
         });
     });
 
-    // Show all cards when adding a new card
+    // Show all cards when adding a new card - Erweitert
     document.getElementById("add-flashcard").addEventListener("click", () => {
         const cardCon = document.getElementById("card-con");
         cardCon.style.display = "block";
         
-        document.querySelectorAll(".category-folder").forEach(f => {
-            f.classList.remove("active");
-        });
+        // Kategorieauswahl NICHT zurücksetzen - currentCategoryId beibehalten
+        // currentCategoryId = null; // Diese Zeile entfernen!
         
-        document.querySelectorAll(".card").forEach(card => {
-            card.style.display = "block";
-        });
+        // Kategorieordner aktiv lassen falls einer ausgewählt war
+        if (currentCategoryId !== null) {
+            // Sicherstellen, dass der aktive Ordner markiert bleibt
+            const activeFolder = document.querySelector(`.category-folder[data-id="${currentCategoryId}"]`);
+            if (activeFolder && !activeFolder.classList.contains("active")) {
+                document.querySelectorAll(".category-folder").forEach(f => {
+                    f.classList.remove("active");
+                });
+                activeFolder.classList.add("active");
+            }
+            
+            // Nur Karten der aktuellen Kategorie anzeigen
+            filterCardsByCategory(currentCategoryId);
+        } else {
+            // Alle Ordner deaktivieren nur wenn keine Kategorie aktiv war
+            document.querySelectorAll(".category-folder").forEach(f => {
+                f.classList.remove("active");
+            });
+            
+            // Alle Karten anzeigen
+            document.querySelectorAll(".card").forEach(card => {
+                card.style.display = "block";
+            });
+        }
     });
 
     // Category deletion handling
@@ -338,6 +357,9 @@ document.addEventListener("DOMContentLoaded", () => {
 //     })
 // );
 
+// Save Button Event-Listener hinzufügen
+document.getElementById("save-btn").addEventListener("click", submitQuestion);
+
 function submitQuestion() {
     const frage = document.getElementById("question").value.trim();
     const antwort = document.getElementById("answer").value.trim();
@@ -350,285 +372,219 @@ function submitQuestion() {
         return;
     }
 
+    // Error-Message verstecken wenn alles korrekt ist
+    errorEl.classList.add("hide");
+
     if (isLoggedIn) {
-    const endpoint = editBool ? 'templates/update_card.php' : 'templates/save_card.php';
-    const payload = editBool 
-        ? `card_id=${encodeURIComponent(cardID)}&frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
-        : `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`;
+        const endpoint = editBool ? 'templates/update_card.php' : 'templates/save_card.php';
+        const payload = editBool 
+            ? `card_id=${encodeURIComponent(cardID)}&frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
+            : `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`;
 
-    fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: payload,
-    })
-      .then((response) => response.text())
-      .then((text) => {
-        if (text.trim() === "success") {
-          location.reload();
-        } else {
-          errorEl.classList.remove("hide");
-          errorEl.textContent = "Error: " + text;
-        }
-      })
-      .catch((error) => {
-        errorEl.classList.remove("hide");
-        errorEl.textContent = "Unexpected error: " + error;
-      });
+        fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: payload,
+        })
+        .then((response) => response.text())
+        .then((text) => {
+            if (text.trim() === "success") {
+                // Kategorie-Counter aktualisieren nur beim Hinzufügen neuer Karten
+                if (!editBool) {
+                    updateCategoryCounter(kategorie, 1);
+                }
+                
+                // Dialog schließen
+                container.classList.remove("hide");
+                addQuestionCard.classList.add("hide");
+                
+                // Nach dem Speichern die aktuelle Kategorieansicht wiederherstellen
+                if (currentCategoryId !== null) {
+                    // Kurz warten und dann die Seite neu laden um die neue Karte anzuzeigen
+                    setTimeout(() => {
+                        location.reload();
+                    }, 100);
+                } else {
+                    location.reload();
+                }
+            } else {
+                errorEl.classList.remove("hide");
+                errorEl.textContent = "Error: " + text;
+            }
+        })
+        .catch((error) => {
+            errorEl.classList.remove("hide");
+            errorEl.textContent = "Unexpected error: " + error;
+        });
 
-    editBool = false;
-    cardID = null;
+        editBool = false;
+        cardID = null;
     } else {
+        // Fallback für nicht-eingeloggte Benutzer (falls vorhanden)
         viewList();
         container.classList.remove("hide");
         addQuestionCard.classList.add("hide");
     }
 }
 
-cardButton.addEventListener("click", submitQuestion);
+// Neue Funktion zum Aktualisieren des Kategorie-Counters
+function updateCategoryCounter(categoryId, change) {
+    const categoryFolder = document.querySelector(`.category-folder[data-id="${categoryId}"]`);
+    if (categoryFolder) {
+        const cardCountElement = categoryFolder.querySelector('.card-count');
+        if (cardCountElement) {
+            const currentCount = parseInt(cardCountElement.textContent.match(/\d+/)[0]);
+            const newCount = Math.max(0, currentCount + change);
+            cardCountElement.textContent = `(${newCount})`;
+        }
+    }
+}
 
-
-// Function to show only the last flashcard
-function showLastCard() {
-    const cardListContainer = document.querySelector(".card-list-container");
-    const cards = Array.from(cardListContainer.querySelectorAll(".card"));
-    
-    if (cards.length === 0) return;
-
-    // Hide all cards first
-    cards.forEach(card => {
-        card.style.display = "none";
+// Category folder handling - Erweitert
+document.querySelectorAll(".category-folder").forEach(folder => {
+    folder.addEventListener("click", () => {
+        const categoryId = folder.dataset.id;
+        currentCategoryId = categoryId; // Aktuelle Kategorie speichern
+        
+        // Toggle active state of folders
+        document.querySelectorAll(".category-folder").forEach(f => {
+            f.classList.remove("active");
+        });
+        folder.classList.add("active");
+        
+        // Show card container
+        const cardCon = document.getElementById("card-con");
+        cardCon.style.display = "block";
+        
+        filterCardsByCategory(categoryId);
     });
+});
 
-    // Show current card
-    cards[currentCardIndex].style.display = "block";
+// Show all cards when adding a new card - Erweitert
+document.getElementById("add-flashcard").addEventListener("click", () => {
+    const cardCon = document.getElementById("card-con");
+    cardCon.style.display = "block";
+    
+    // Kategorieauswahl NICHT zurücksetzen - currentCategoryId beibehalten
+    // currentCategoryId = null; // Diese Zeile entfernen!
+    
+    // Kategorieordner aktiv lassen falls einer ausgewählt war
+    if (currentCategoryId !== null) {
+        // Sicherstellen, dass der aktive Ordner markiert bleibt
+        const activeFolder = document.querySelector(`.category-folder[data-id="${currentCategoryId}"]`);
+        if (activeFolder && !activeFolder.classList.contains("active")) {
+            document.querySelectorAll(".category-folder").forEach(f => {
+                f.classList.remove("active");
+            });
+            activeFolder.classList.add("active");
+        }
+        
+        // Nur Karten der aktuellen Kategorie anzeigen
+        filterCardsByCategory(currentCategoryId);
+    } else {
+        // Alle Ordner deaktivieren nur wenn keine Kategorie aktiv war
+        document.querySelectorAll(".category-folder").forEach(f => {
+            f.classList.remove("active");
+        });
+        
+        // Alle Karten anzeigen
+        document.querySelectorAll(".card").forEach(card => {
+            card.style.display = "block";
+        });
+    }
+});
 
-    // Update navigation buttons
-    cards.forEach((card, index) => {
-        const prevBtn = card.querySelector(".card-prev-btn");
-        const nextBtn = card.querySelector(".card-next-btn");
-
-        if (index === currentCardIndex) {
-            // Only show navigation buttons if there are multiple cards
-            if (prevBtn) {
-                prevBtn.style.display = cards.length > 1 && currentCardIndex > 0 ? "flex" : "none";
-                prevBtn.onclick = () => {
-                    if (currentCardIndex > 0) {
-                        currentCardIndex--;
-                        showLastCard();
-                    }
-                };
-            }
-            if (nextBtn) {
-                nextBtn.style.display = cards.length > 1 && currentCardIndex < cards.length - 1 ? "flex" : "none";
-                nextBtn.onclick = () => {
-                    if (currentCardIndex < cards.length - 1) {
-                        currentCardIndex++;
-                        showLastCard();
-                    }
-                };
-            }
+// Korrigierte filterCardsByCategory Funktion
+function filterCardsByCategory(categoryId) {
+    const cards = document.querySelectorAll(".card");
+    let hasVisibleCards = false;
+    
+    cards.forEach(card => {
+        if (card.dataset.kategorieId === categoryId) {
+            card.style.display = "block";
+            hasVisibleCards = true;
+        } else {
+            card.style.display = "none";
         }
     });
 
-    cardListContainer.classList.add("single-card");
-}
-
-// Function to show all flashcards
-function showAllCards() {
-    const cardListContainer = document.querySelector(".card-list-container");
-    const cards = cardListContainer.querySelectorAll(".card");
-    
+    // Navigation-Buttons in der Kategorieansicht verstecken
     cards.forEach(card => {
-        card.style.display = "block";
-        // Always hide navigation buttons when showing all cards
         const prevBtn = card.querySelector(".card-prev-btn");
         const nextBtn = card.querySelector(".card-next-btn");
         if (prevBtn) prevBtn.style.display = "none";
         if (nextBtn) nextBtn.style.display = "none";
     });
 
+    // Show message if no cards in category
+    const cardCon = document.getElementById("card-con");
+    let noCardsMessage = document.querySelector(".no-cards-message");
+    
+    if (!hasVisibleCards) {
+        if (!noCardsMessage) {
+            const message = document.createElement("p");
+            message.className = "no-cards-message";
+            message.textContent = "No flashcards in this category yet.";
+            message.style.textAlign = "center";
+            message.style.color = "#666";
+            message.style.fontSize = "1.2em";
+            message.style.margin = "2em 0";
+            cardCon.appendChild(message);
+        }
+    } else if (noCardsMessage) {
+        noCardsMessage.remove();
+    }
+
+    // Sicherstellen, dass wir in der "Show All" Ansicht sind
+    const cardListContainer = document.querySelector(".card-list-container");
     cardListContainer.classList.remove("single-card");
+    showAll = true;
+    const toggleBtn = document.getElementById("toggle-view-btn");
+    if (toggleBtn) {
+        toggleBtn.textContent = "Show Last";
+    }
+    
+    // Sicherstellen, dass der richtige Ordner als aktiv markiert ist
+    document.querySelectorAll(".category-folder").forEach(f => {
+        f.classList.remove("active");
+    });
+    const activeFolder = document.querySelector(`.category-folder[data-id="${categoryId}"]`);
+    if (activeFolder) {
+        activeFolder.classList.add("active");
+    }
 }
 
-// Toggle between "Show All" and "Show Last"
-toggleViewBtn.addEventListener("click", () => {
+// Funktion zur Aktualisierung der Navigation nach dem Löschen erweitern
+function updateNavigationAfterDelete() {
     const cardListContainer = document.querySelector(".card-list-container");
-    const cards = cardListContainer.querySelectorAll(".card");
-
-    if (cards.length === 0) return;
-
-    if (showAll) {
-        // Switch to single card view
-        showLastCard();
-        toggleViewBtn.textContent = "Show All";
-    } else {
-        // Switch to all cards view
-        showAllCards();
-        toggleViewBtn.textContent = "Show Last";
+    const visibleCards = Array.from(cardListContainer.querySelectorAll(".card")).filter(card => 
+        card.style.display !== "none"
+    );
+    
+    // Aktuelle Kartenindex anpassen falls nötig
+    if (currentCardIndex >= visibleCards.length) {
+        currentCardIndex = Math.max(0, visibleCards.length - 1);
     }
-    showAll = !showAll;
-});
-
-
-// Shows/Hides Previous/Next buttons on each flashcard, depending on the 'show' parameter and the currentCardIndex.
-function showCardNavigationButtons(show) {
-    const cardListContainer = document.querySelector(".card-list-container");
-    const cards = cardListContainer.querySelectorAll(".card");
-    cards.forEach(card => {
+    
+    // Navigation-Buttons für alle sichtbaren Karten aktualisieren
+    visibleCards.forEach((card, index) => {
         const prevBtn = card.querySelector(".card-prev-btn");
         const nextBtn = card.querySelector(".card-next-btn");
-        if (prevBtn) prevBtn.style.display = show && currentCardIndex > 0 ? "inline-block" : "none";
-        if (nextBtn) nextBtn.style.display = show && currentCardIndex < cards.length - 1 ? "inline-block" : "none";
-    });
-}
-
-// Show the button when the first flashcard is added
-function showToggleButton() {
-    if (toggleViewBtn.classList.contains("hide")) {
-        toggleViewBtn.classList.remove("hide");
-    }
-}
-
-// Updates the flashcard navigation: shows only current card and displays the Previous/Next buttons on the current card if navigation is possible (not at the first or last card).
-function updateCardNavigation() {
-    const cardListContainer = document.querySelector(".card-list-container");
-    const cards = cardListContainer.querySelectorAll(".card");
-    cards.forEach((card, idx) => {
-        card.style.display = idx === currentCardIndex ? "block" : "none";
-        // Show/hide navigation buttons on the current card
-        const prevBtn = card.querySelector(".card-prev-btn");
-        const nextBtn = card.querySelector(".card-next-btn");
-        if (prevBtn) prevBtn.style.display = (idx === currentCardIndex && currentCardIndex > 0) ? "inline-block" : "none";
-        if (nextBtn) nextBtn.style.display = (idx === currentCardIndex && currentCardIndex < cards.length - 1) ? "inline-block" : "none";
-    });
-    if (cards.length > 0) {
-        cardListContainer.classList.add("single-card");
-    }
-}
-
-function viewList() {
-    var listCard = document.getElementsByClassName("card-list-container");
-    var div = document.createElement("div");
-    div.classList.add("card");
-    div.setAttribute("data-kategorie", category.value);
-    // Question
-    div.innerHTML += `<p class="question-div">${question.value}</p>`;
-    // Answer
-    var displayAnswer = document.createElement("p");
-    displayAnswer.classList.add("answer-div", "hide");
-    displayAnswer.innerText = answer.value;
-
-    // Show/Hide answer
-    var link = document.createElement("a");
-    link.setAttribute("href", "#");
-    link.setAttribute("class", "show-hide-btn");
-    link.innerHTML = "Show"; // "Show" by default
-    link.addEventListener("click", () => {
-        displayAnswer.classList.toggle("hide");
-        link.innerHTML = displayAnswer.classList.contains("hide") ? "Show" : "Hide";
-    });
-
-    div.appendChild(link);
-    div.appendChild(displayAnswer);
-
-    // Buttons-Container
-    let buttonsCon = document.createElement("div");
-    buttonsCon.classList.add("buttons-con");
-
-    // Navigation Buttons (Previous/Next)
-    let cardPrevBtn = document.createElement("button");
-    cardPrevBtn.setAttribute("class", "card-prev-btn nav-btn");
-    cardPrevBtn.innerHTML = `<i class="fa-solid fa-angle-left"></i>`;
-    cardPrevBtn.title = "Previous";
-    cardPrevBtn.style.display = "none";
-    cardPrevBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (currentCardIndex > 0) {
-            currentCardIndex--;
-            updateCardNavigation();
+        
+        // Buttons nur in der Single-Card-Ansicht anzeigen
+        if (!showAll && visibleCards.length > 1) {
+            if (prevBtn) {
+                prevBtn.style.display = (index === currentCardIndex && currentCardIndex > 0) ? "flex" : "none";
+            }
+            if (nextBtn) {
+                nextBtn.style.display = (index === currentCardIndex && currentCardIndex < visibleCards.length - 1) ? "flex" : "none";
+            }
+        } else {
+            // In der All-Cards-Ansicht alle Navigation-Buttons verstecken
+            if (prevBtn) prevBtn.style.display = "none";
+            if (nextBtn) nextBtn.style.display = "none";
         }
     });
-
-    let cardNextBtn = document.createElement("button");
-    cardNextBtn.setAttribute("class", "card-next-btn nav-btn");
-    cardNextBtn.innerHTML = `<i class="fa-solid fa-angle-right"></i>`;
-    cardNextBtn.title = "Next";
-    cardNextBtn.style.display = "none";
-    cardNextBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const cardListContainer = document.querySelector(".card-list-container");
-        const cards = cardListContainer.querySelectorAll(".card");
-        if (currentCardIndex < cards.length - 1) {
-            currentCardIndex++;
-            updateCardNavigation();
-        }
-    });
-
-    // Edit button
-    var editButton = document.createElement("button");
-    editButton.setAttribute("class", "edit");
-    editButton.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
-    editButton.addEventListener("click", () => {
-        editBool = true;
-        modifyElement(editButton, true);
-        addQuestionCard.classList.remove("hide");
-    });
-
-    // Delete Button
-    var deleteButton = document.createElement("button");
-    deleteButton.setAttribute("class", "delete");
-    deleteButton.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
-    deleteButton.addEventListener("click", () => {
-      const cardListContainer = document.querySelector(".card-list-container");
-      const cards = cardListContainer.querySelectorAll(".card");
-      modifyElement(deleteButton);
-      const newCards = cardListContainer.querySelectorAll(".card");
-      if (currentCardIndex > newCards.length - 1) {
-        currentCardIndex = Math.max(0, newCards.length - 1);
-      }
-      updateCardNavigation();
-    });
-
-    // Buttons in order: Prev, Next, Edit, Delete
-    buttonsCon.appendChild(cardPrevBtn);
-    buttonsCon.appendChild(cardNextBtn);
-    buttonsCon.appendChild(editButton);
-    buttonsCon.appendChild(deleteButton);
-
-    disableButtons(false);
-
-    div.appendChild(buttonsCon);
-    listCard[0].appendChild(div);
-
-    showToggleButton();
-
-    hideQuestion();
-
-    // Always show the last added card
-    const cardListContainer = document.querySelector(".card-list-container");
-    currentCardIndex = cardListContainer.querySelectorAll(".card").length - 1;
-    updateCardNavigation();
 }
-
-// Modify Elements
-const modifyElement = (element, edit = false) => {
-  let parentDiv = element.parentElement.parentElement;
-  let parentQuestion = parentDiv.querySelector(".question-div").innerText;
-  if (edit) {
-    let parentAns = parentDiv.querySelector(".answer-div").innerText;
-    answer.value = parentAns;
-    question.value = parentQuestion;
-    disableButtons(true);
-  }
-  parentDiv.remove();
-};
-
-// Disable edit and delete buttons
-const disableButtons = (value) => {
-  let editButtons = document.getElementsByClassName("edit");
-  Array.from(editButtons).forEach((element) => {
-    element.disabled = value;
-  });
-};
