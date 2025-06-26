@@ -48,23 +48,50 @@ closeBtn.addEventListener("click", (hideQuestion = () => {
 );
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".edit").forEach(editButton => {
-      editButton.addEventListener("click", () => {
-          const cardElement = editButton.closest(".card");
-          const frage = cardElement.querySelector(".question-div").innerText.trim();
-          const antwort = cardElement.querySelector(".answer-div").innerText.trim();
-          const kategorieID = cardElement.dataset.kategorieId;
-          cardID = cardElement.dataset.id;
+    // Kategorie nach dem Laden der Seite wiederherstellen
+    const savedCategoryId = localStorage.getItem('selectedCategoryId');
+    if (savedCategoryId) {
+        // Gespeicherte Kategorie-ID aus localStorage entfernen
+        localStorage.removeItem('selectedCategoryId');
+        
+        // Kategorie-Ordner finden und aktivieren
+        const categoryFolder = document.querySelector(`.category-folder[data-id="${savedCategoryId}"]`);
+        if (categoryFolder) {
+            // Kategorie-Ordner als aktiv markieren
+            document.querySelectorAll(".category-folder").forEach(f => {
+                f.classList.remove("active");
+            });
+            categoryFolder.classList.add("active");
+            
+            // Aktuelle Kategorie setzen
+            currentCategoryId = savedCategoryId;
+            
+            // Card-Container anzeigen
+            const cardCon = document.getElementById("card-con");
+            cardCon.style.display = "block";
+            
+            // Karten nach Kategorie filtern
+            filterCardsByCategory(savedCategoryId);
+        }
+    }
 
-          question.value = frage;
-          answer.value = antwort;
-          category.value = kategorieID;
+    document.querySelectorAll(".edit").forEach(editButton => {
+        editButton.addEventListener("click", () => {
+            const cardElement = editButton.closest(".card");
+            const frage = cardElement.querySelector(".question-div").innerText.trim();
+            const antwort = cardElement.querySelector(".answer-div").innerText.trim();
+            const kategorieID = cardElement.dataset.kategorieId;
+            cardID = cardElement.dataset.id;
 
-          addQuestionCard.classList.remove("hide");
-          container.classList.add("hide");
-          editBool = true;
-      });
-  });
+            question.value = frage;
+            answer.value = antwort;
+            category.value = kategorieID;
+
+            addQuestionCard.classList.remove("hide");
+            container.classList.add("hide");
+            editBool = true;
+        });
+    });
 
   // Delete Button Handler - Korrigiert mit Kategorie-Counter Update
   document.querySelectorAll(".delete").forEach(deleteButton => {
@@ -400,15 +427,13 @@ function submitQuestion() {
                 container.classList.remove("hide");
                 addQuestionCard.classList.add("hide");
                 
-                // Nach dem Speichern die aktuelle Kategorieansicht wiederherstellen
+                // Aktuelle Kategorie für Wiederherstellung speichern
                 if (currentCategoryId !== null) {
-                    // Kurz warten und dann die Seite neu laden um die neue Karte anzuzeigen
-                    setTimeout(() => {
-                        location.reload();
-                    }, 100);
-                } else {
-                    location.reload();
+                    localStorage.setItem('selectedCategoryId', currentCategoryId);
                 }
+                
+                // Seite neu laden
+                location.reload();
             } else {
                 errorEl.classList.remove("hide");
                 errorEl.textContent = "Error: " + text;
