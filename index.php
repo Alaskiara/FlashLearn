@@ -110,13 +110,6 @@ if (isset($_SESSION['user_id'])) {
                                 <p class="answer-div hide"><?= nl2br(htmlspecialchars($card['Antwort'])) ?></p>
 
                                 <div class="buttons-con">
-                                    <button class="card-prev-btn nav-btn" style="<?= $index === 0 ? 'display: none;' : '' ?>" title="Previous">
-                                        <i class="fa-solid fa-angle-left"></i>
-                                    </button>
-                                    <button class="card-next-btn nav-btn" style="<?= $index === count($flashcards) - 1 ? 'display: none;' : '' ?>" title="Next">
-                                        <i class="fa-solid fa-angle-right"></i>
-                                    </button>
-
                                     <button class="edit"><i class="fa-solid fa-pen-to-square"></i></button>
                                     <button class="delete"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>

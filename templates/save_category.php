@@ -20,7 +20,8 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("si", $category_name, $user_id);
 
 if ($stmt->execute()) {
-    echo "success:" . $conn->insert_id;
+    $new_category_id = $conn->insert_id;
+    echo "success:" . $new_category_id . ":" . htmlspecialchars($category_name);
 } else {
     echo "error:" . $stmt->error;
 }
