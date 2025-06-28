@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 01. Jun 2025 um 15:57
+-- Erstellungszeit: 28. Jun 2025 um 20:57
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -41,7 +41,10 @@ CREATE TABLE `card` (
 --
 
 INSERT INTO `card` (`Card_ID`, `User_ID`, `Frage`, `Antwort`, `points`, `Kategorie_ID`) VALUES
-(1, 1, 'test', 'test', 1, 1);
+(17, 1, 'Mathe Frage 1', 'Mathe Antwort 1', 0, 8),
+(25, 1, 'OOP Frage 1', 'OOP Antwort 1', 0, 9),
+(26, 1, 'IT-Projekt Frage 1', 'IT-Projekt Antwort 1', 0, 10),
+(27, 1, 'Mathe Frage 2', 'Mathe Antwort 2', 0, 8);
 
 -- --------------------------------------------------------
 
@@ -51,16 +54,20 @@ INSERT INTO `card` (`Card_ID`, `User_ID`, `Frage`, `Antwort`, `points`, `Kategor
 
 CREATE TABLE `kategorie` (
   `Kategorie_ID` int(11) NOT NULL,
-  `Bezeichnung` varchar(50) NOT NULL
+  `Bezeichnung` varchar(50) NOT NULL,
+  `User_ID` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Daten für Tabelle `kategorie`
 --
 
-INSERT INTO `kategorie` (`Kategorie_ID`, `Bezeichnung`) VALUES
-(1, 'Mathe'),
-(2, 'OOP');
+INSERT INTO `kategorie` (`Kategorie_ID`, `Bezeichnung`, `User_ID`) VALUES
+(1, 'Mathe', NULL),
+(2, 'OOP', NULL),
+(8, 'Mathematik', 1),
+(9, 'OOP', 1),
+(10, 'IT-Projekt', 1);
 
 -- --------------------------------------------------------
 
@@ -101,7 +108,8 @@ ALTER TABLE `card`
 -- Indizes für die Tabelle `kategorie`
 --
 ALTER TABLE `kategorie`
-  ADD PRIMARY KEY (`Kategorie_ID`);
+  ADD PRIMARY KEY (`Kategorie_ID`),
+  ADD KEY `User_ID` (`User_ID`);
 
 --
 -- Indizes für die Tabelle `user`
@@ -117,13 +125,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT für Tabelle `card`
 --
 ALTER TABLE `card`
-  MODIFY `Card_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `Card_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT für Tabelle `kategorie`
 --
 ALTER TABLE `kategorie`
-  MODIFY `Kategorie_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Kategorie_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT für Tabelle `user`
@@ -141,6 +149,12 @@ ALTER TABLE `user`
 ALTER TABLE `card`
   ADD CONSTRAINT `Kategorie_ID` FOREIGN KEY (`Kategorie_ID`) REFERENCES `kategorie` (`Kategorie_ID`),
   ADD CONSTRAINT `User_ID` FOREIGN KEY (`User_ID`) REFERENCES `user` (`User_ID`);
+
+--
+-- Constraints der Tabelle `kategorie`
+--
+ALTER TABLE `kategorie`
+  ADD CONSTRAINT `kategorie_ibfk_1` FOREIGN KEY (`User_ID`) REFERENCES `user` (`User_ID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

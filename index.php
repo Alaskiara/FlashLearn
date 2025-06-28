@@ -36,7 +36,7 @@ if (isset($_SESSION['user_id'])) {
 
 <body>
     <header>
-        <h1><a href=".index.php" class="logo-link">FlashLearn</a></h1>
+        <h1><a href="index.php" class="logo-link">FlashLearn</a></h1>
         <?php if (isset($_SESSION['username'])): ?>
             <div class="login-info">
                 <a class="login-button">
@@ -76,7 +76,7 @@ if (isset($_SESSION['user_id'])) {
                     $sql = "SELECT k.*, COUNT(c.Card_ID) as card_count 
                             FROM kategorie k 
                             LEFT JOIN card c ON k.Kategorie_ID = c.Kategorie_ID 
-                            WHERE c.User_ID = ? 
+                            WHERE k.User_ID = ? 
                             GROUP BY k.Kategorie_ID";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("i", $_SESSION['user_id']);

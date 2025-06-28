@@ -34,25 +34,26 @@
 
         if (!$err) {
             require_once('../config/dbaccess.php');
-            $db_obj = new mysqli($host, $user, $password, $database);
-            if ($db_obj->connect_error) {
-                $dbErr = "Connection error: " . $db_obj->connect_error;
+            
+            $stmt = $conn->prepare("SELECT User_ID FROM user WHERE User_ID = ? AND passwort = ?");
+            $old_password_hash = password_hash($old_password, PASSWORD_DEFAULT);
+            $stmt->bind_param("is", $_SESSION["user_id"], $old_password_hash);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows !== 1) {
+                $old_passwordErr = "Invalid current password!";
+                $err = true;
             } else {
-                try {
-                    $stmt = $db_obj->prepare("UPDATE user SET password_hash = SHA2(?, 256) WHERE id = ? AND password_hash = SHA2(?, 256)");
-                    $stmt->bind_param("sis", $new_password, $_SESSION["id"], $old_password);
-                    $stmt->execute();
-
-                    if ($db_obj->affected_rows !== 1) {
-                        $old_passwordErr = "Invalid current password!";
-                        $err = true;
-                    } else {
-                        header("Location: index.php");
-                        exit;
-                    }
-
-                } catch (mysqli_sql_exception $e) {
-                    $dbErr = $e->getMessage();
+                $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+                $update_stmt = $conn->prepare("UPDATE user SET passwort = ? WHERE User_ID = ?");
+                $update_stmt->bind_param("si", $new_password_hash, $_SESSION["user_id"]);
+                
+                if ($update_stmt->execute()) {
+                    header("Location: ../index.php");
+                    exit;
+                } else {
+                    $dbErr = "Error updating password";
                 }
             }
         }
@@ -91,4 +92,4 @@
             </form>
         </div>
     </body>
-</html> 
+</html>
