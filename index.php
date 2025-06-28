@@ -76,7 +76,7 @@ if (isset($_SESSION['user_id'])) {
                     $sql = "SELECT k.*, COUNT(c.Card_ID) as card_count 
                             FROM kategorie k 
                             LEFT JOIN card c ON k.Kategorie_ID = c.Kategorie_ID 
-                            WHERE k.User_ID = ? 
+                            WHERE c.User_ID = ? 
                             GROUP BY k.Kategorie_ID";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("i", $_SESSION['user_id']);
