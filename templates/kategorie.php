@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/../config/dbaccess.php');
 
 if (isset($_SESSION['user_id'])) {
-    $sql = "SELECT Kategorie_ID, Bezeichnung FROM Kategorie WHERE User_ID = ?";
+    $sql = "SELECT Kategorie_ID, Bezeichnung, User_ID FROM Kategorie, User WHERE User_ID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
