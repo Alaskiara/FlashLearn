@@ -1,21 +1,15 @@
 const container = document.querySelector(".container");
 const addQuestionCard = document.getElementById("add-question-card");
-const cardButton = document.getElementById("save-btn");
 const question = document.getElementById("question");
 const answer = document.getElementById("answer");
 const category = document.getElementById("kategorie");
-const errorMessage = document.getElementById("error");
 const addQuestion = document.getElementById("add-flashcard");
 const closeBtn = document.getElementById("close-btn");
-const toggleViewBtn = document.getElementById("toggle-view-btn");
-const editBtn = document.getElementById("edit");
 let editBool = false;
-let showAll = true;
 let cardID = null;
 let currentCategoryId = null;
 let cardsWereVisibleBeforeModal = false;
 let categoryFolderStateBeforeModal = null;
-let currentCardIndex = 0;
 
 // Add question
 addQuestion.addEventListener("click", () => {
@@ -181,9 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
                       if (currentCategoryId !== null) {
                         filterCardsByCategory(currentCategoryId);
                       }
-                      
-                      // Navigation-Buttons korrekt aktualisieren
-                      updateNavigationAfterDelete();
                   } else {
                       console.error('Fehler beim Löschen:', text);
                   }
@@ -222,12 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!savedCategoryId && !showCards) {
             const cardCon = document.getElementById("card-con");
             cardCon.style.display = "none";
-        }
-        
-        // Initialize toggle button text
-        const toggleViewBtn = document.getElementById("toggle-view-btn");
-        if (toggleViewBtn) {
-            toggleViewBtn.textContent = "Show Last";
         }
     }
 
@@ -446,7 +431,6 @@ function submitQuestion() {
         cardID = null;
     } else {
         // Fallback für nicht-eingeloggte Benutzer (falls vorhanden)
-        viewList();
         container.classList.remove("hide");
         addQuestionCard.classList.add("hide");
     }
@@ -465,31 +449,7 @@ function updateCategoryCounter(categoryId, change) {
     }
 }
 
-// Funktion zum Anzeigen aller Karten hinzufügen
-function showAllCards() {
-    const cardCon = document.getElementById("card-con");
-    cardCon.style.display = "block";
-    
-    // Alle Karten anzeigen
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.display = "block";
-    });
-    
-    // Alle Kategorieordner deaktivieren
-    document.querySelectorAll(".category-folder").forEach(f => {
-        f.classList.remove("active");
-    });
-    
-    // Aktuelle Kategorie zurücksetzen
-    currentCategoryId = null;
-    
-    // Navigation-Buttons korrekt anzeigen falls in Single-Card-Ansicht
-    if (!showAll) {
-        updateNavigationButtons();
-    }
-}
-
-// Category folder handling - Erweitert
+// Category folder handling - Erweitert um currentCategoryId Tracking
 document.querySelectorAll(".category-folder").forEach(folder => {
     folder.addEventListener("click", () => {
         const categoryId = folder.dataset.id;
@@ -509,41 +469,6 @@ document.querySelectorAll(".category-folder").forEach(folder => {
     });
 });
 
-// Show all cards when adding a new card - Erweitert
-document.getElementById("add-flashcard").addEventListener("click", () => {
-    const cardCon = document.getElementById("card-con");
-    cardCon.style.display = "block";
-    
-    // Kategorieauswahl NICHT zurücksetzen - currentCategoryId beibehalten
-    // currentCategoryId = null; // Diese Zeile entfernen!
-    
-    // Kategorieordner aktiv lassen falls einer ausgewählt war
-    if (currentCategoryId !== null) {
-        // Sicherstellen, dass der aktive Ordner markiert bleibt
-        const activeFolder = document.querySelector(`.category-folder[data-id="${currentCategoryId}"]`);
-        if (activeFolder && !activeFolder.classList.contains("active")) {
-            document.querySelectorAll(".category-folder").forEach(f => {
-                f.classList.remove("active");
-            });
-            activeFolder.classList.add("active");
-        }
-        
-        // Nur Karten der aktuellen Kategorie anzeigen
-        filterCardsByCategory(currentCategoryId);
-    } else {
-        // Alle Ordner deaktivieren nur wenn keine Kategorie aktiv war
-        document.querySelectorAll(".category-folder").forEach(f => {
-            f.classList.remove("active");
-        });
-        
-        // Alle Karten anzeigen
-        document.querySelectorAll(".card").forEach(card => {
-            card.style.display = "block";
-        });
-    }
-});
-
-// Korrigierte filterCardsByCategory Funktion (Previous/Next Buttons entfernt)
 function filterCardsByCategory(categoryId) {
     const cards = document.querySelectorAll(".card");
     let hasVisibleCards = false;
@@ -575,15 +500,6 @@ function filterCardsByCategory(categoryId) {
     } else if (noCardsMessage) {
         noCardsMessage.remove();
     }
-
-    // Sicherstellen, dass wir in der "Show All" Ansicht sind
-    const cardListContainer = document.querySelector(".card-list-container");
-    cardListContainer.classList.remove("single-card");
-    showAll = true;
-    const toggleBtn = document.getElementById("toggle-view-btn");
-    if (toggleBtn) {
-        toggleBtn.textContent = "Show Last";
-    }
     
     // Sicherstellen, dass der richtige Ordner als aktiv markiert ist
     document.querySelectorAll(".category-folder").forEach(f => {
@@ -592,19 +508,5 @@ function filterCardsByCategory(categoryId) {
     const activeFolder = document.querySelector(`.category-folder[data-id="${categoryId}"]`);
     if (activeFolder) {
         activeFolder.classList.add("active");
-    }
-}
-
-// Vereinfachte updateNavigationAfterDelete Funktion (Previous/Next Buttons entfernt)
-function updateNavigationAfterDelete() {
-    // Navigation-Buttons sind nicht mehr vorhanden, daher ist diese Funktion minimal
-    const cardListContainer = document.querySelector(".card-list-container");
-    const visibleCards = Array.from(cardListContainer.querySelectorAll(".card")).filter(card => 
-        card.style.display !== "none"
-    );
-    
-    // Falls nötig, aktuellen Index anpassen
-    if (currentCardIndex >= visibleCards.length) {
-        currentCardIndex = Math.max(0, visibleCards.length - 1);
     }
 }
