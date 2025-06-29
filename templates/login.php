@@ -50,9 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <link rel="stylesheet" href="../assets/css/stylesheet.css">
 </head>
 <body>
-  <header>
   <?php include '../includes/header.php'; ?>
-  </header>
   <main>
   <div class="login-container">
     <h1>Login</h1>

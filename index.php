@@ -35,21 +35,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 
 <body>
-    <header>
-        <h1><a href="index.php" class="logo-link">FlashLearn</a></h1>
-        <?php if (isset($_SESSION['username'])): ?>
-            <div class="login-info">
-                <a class="login-button">
-                    <h4>You are logged in as: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4>
-                </a>
-                <a class="login-button" href="templates/logout.php">Logout</a>
-            </div>
-        <?php else: ?>
-            <a class="login-button" href="templates/login.php">
-                <h4>Login/Sign Up</h4>
-            </a>
-        <?php endif; ?>
-    </header>
+    <?php include 'includes/header.php'; ?>
 
     <main>
         <?php if (!isset($_SESSION['user_id'])): ?>

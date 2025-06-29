@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     $user = $_POST['username'];
     $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    // Benutzername prüfen (optional, aber empfehlenswert)
     $check = $conn->prepare("SELECT USER_ID FROM user WHERE username = ?");
     $check->bind_param("s", $user);
     $check->execute();
@@ -46,9 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   <link rel="stylesheet" href="../assets/css/stylesheet.css">
 </head>
 <body>
-  <header>
   <?php include '../includes/header.php'; ?>
-  </header>
   <main>
   <div class="signup-container">
     <h1>Sign Up</h1>
