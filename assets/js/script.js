@@ -10,17 +10,24 @@ const closeBtn = document.getElementById("close-btn");
 const toggleViewBtn = document.getElementById("toggle-view-btn");
 const editBtn = document.getElementById("edit");
 let editBool = false;
-let showAll = true;  // Start with showing all cards
+let showAll = true;
 let cardID = null;
-
-// Globale Variable für die aktuelle Kategorie
 let currentCategoryId = null;
-
-// Global variable to track the current card index
+let cardsWereVisibleBeforeModal = false;
+let categoryFolderStateBeforeModal = null;
 let currentCardIndex = 0;
 
 // Add question
 addQuestion.addEventListener("click", () => {
+    // Speichern, ob Cards vor dem Modal sichtbar waren
+    const cardCon = document.getElementById("card-con");
+    const computedStyle = window.getComputedStyle(cardCon);
+    cardsWereVisibleBeforeModal = computedStyle.display !== "none";
+    
+    // Aktuellen Zustand der Kategorieordner speichern
+    const activeFolder = document.querySelector(".category-folder.active");
+    categoryFolderStateBeforeModal = activeFolder ? activeFolder.dataset.id : null;
+    
     container.classList.add("hide");
     question.value = "";
     answer.value = "";
@@ -35,19 +42,38 @@ addQuestion.addEventListener("click", () => {
     }
 });
 
-// Hide "Add Flashcard" (Close Button) - Korrigiert
+// Hide "Add Flashcard" (Close Button)
 closeBtn.addEventListener("click", (hideQuestion = () => {
     container.classList.remove("hide");
     addQuestionCard.classList.add("hide");
     editBool = false;
     cardID = null;
     
-    // Wiederherstellen der Kategorieansicht wenn eine Kategorie aktiv war
-    if (currentCategoryId !== null) {
-        // Filterung der Karten nach aktueller Kategorie
-        filterCardsByCategory(currentCategoryId);
+    // Wiederherstellen der ursprünglichen Ansicht
+    const cardCon = document.getElementById("card-con");
+    
+    // Kategorieordner-Zustand wiederherstellen
+    document.querySelectorAll(".category-folder").forEach(f => {
+        f.classList.remove("active");
+    });
+    
+    if (categoryFolderStateBeforeModal) {
+        // Eine Kategorie war aktiv
+        const folderToActivate = document.querySelector(`.category-folder[data-id="${categoryFolderStateBeforeModal}"]`);
+        if (folderToActivate) {
+            folderToActivate.classList.add("active");
+        }
+        currentCategoryId = categoryFolderStateBeforeModal;
+        cardCon.style.display = "block";
+        filterCardsByCategory(categoryFolderStateBeforeModal);
+    } else if (!cardsWereVisibleBeforeModal) {
+        // Keine Kategorie war aktiv und Cards waren nicht sichtbar
+        cardCon.style.display = "none";
+        currentCategoryId = null;
     } else {
-        // Wenn keine Kategorie aktiv war, alle Karten anzeigen
+        // Keine Kategorie war aktiv aber Cards waren sichtbar (alle Cards anzeigen)
+        cardCon.style.display = "block";
+        currentCategoryId = null;
         document.querySelectorAll(".card").forEach(card => {
             card.style.display = "block";
         });
@@ -56,6 +82,10 @@ closeBtn.addEventListener("click", (hideQuestion = () => {
 );
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Standardmäßig Card-Container verstecken beim ersten Laden
+    const cardCon = document.getElementById("card-con");
+    cardCon.style.display = "none";
+    
     // Kategorie nach dem Laden der Seite wiederherstellen
     const savedCategoryId = localStorage.getItem('selectedCategoryId');
     const showCards = localStorage.getItem('showCards');
@@ -66,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (savedCategoryId === 'hide-cards') {
             // Card-Container verstecken
-            const cardCon = document.getElementById("card-con");
             cardCon.style.display = "none";
             currentCategoryId = null;
         } else {
@@ -83,14 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentCategoryId = savedCategoryId;
                 
                 // Card-Container anzeigen
-                const cardCon = document.getElementById("card-con");
                 cardCon.style.display = "block";
                 
                 // Karten nach Kategorie filtern
                 filterCardsByCategory(savedCategoryId);
             } else {
                 // Falls die Kategorie nicht mehr existiert, Card-Container verstecken
-                const cardCon = document.getElementById("card-con");
                 cardCon.style.display = "none";
                 currentCategoryId = null;
             }
@@ -100,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Zusätzliche Behandlung für showCards Flag
     if (showCards === 'true') {
         localStorage.removeItem('showCards');
-        const cardCon = document.getElementById("card-con");
         cardCon.style.display = "block";
     }
 
@@ -122,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-  // Delete Button Handler - Korrigiert mit Kategorie-Counter Update
+  // Delete Button Handler
   document.querySelectorAll(".delete").forEach(deleteButton => {
       deleteButton.addEventListener("click", () => {
           const cardElement = deleteButton.closest(".card");
@@ -285,40 +311,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Show all cards when adding a new card - Erweitert
-    document.getElementById("add-flashcard").addEventListener("click", () => {
-        const cardCon = document.getElementById("card-con");
-        cardCon.style.display = "block";
-        
-        // Kategorieauswahl NICHT zurücksetzen - currentCategoryId beibehalten
-        // currentCategoryId = null; // Diese Zeile entfernen!
-        
-        // Kategorieordner aktiv lassen falls einer ausgewählt war
-        if (currentCategoryId !== null) {
-            // Sicherstellen, dass der aktive Ordner markiert bleibt
-            const activeFolder = document.querySelector(`.category-folder[data-id="${currentCategoryId}"]`);
-            if (activeFolder && !activeFolder.classList.contains("active")) {
-                document.querySelectorAll(".category-folder").forEach(f => {
-                    f.classList.remove("active");
-                });
-                activeFolder.classList.add("active");
-            }
-            
-            // Nur Karten der aktuellen Kategorie anzeigen
-            filterCardsByCategory(currentCategoryId);
-        } else {
-            // Alle Ordner deaktivieren nur wenn keine Kategorie aktiv war
-            document.querySelectorAll(".category-folder").forEach(f => {
-                f.classList.remove("active");
-            });
-            
-            // Alle Karten anzeigen
-            document.querySelectorAll(".card").forEach(card => {
-                card.style.display = "block";
-            });
-        }
-    });
-
     // Category deletion handling
     document.querySelectorAll(".delete-category").forEach(deleteBtn => {
         deleteBtn.addEventListener("click", (e) => {
@@ -387,58 +379,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
-
-
-
-// Save Flashcard
-// cardButton.addEventListener("click", (submitQuestion = () => {
-//         editBool = false;
-//         tempQuestion = question.value.trim();
-//         tempAnswer = answer.value.trim();
-//         if (!tempQuestion || !tempAnswer) {
-//             errorMessage.classList.remove("hide");
-//         } else {
-//             container.classList.remove("hide");
-//             errorMessage.classList.add("hide");
-//             viewList();
-//             question.value = "";
-//             answer.value = "";
-//         }
-//     const frage = document.getElementById("question").value.trim();
-//     const antwort = document.getElementById("answer").value.trim();
-//     const kategorie = document.getElementById("kategorie").value;
-
-//     const errorEl = document.getElementById("error");
-
-//     if (!frage || !antwort || !kategorie) {
-//         errorEl.classList.remove("hide");
-//         errorEl.textContent = "Input fields cannot be empty!";
-//         return;
-//     }
-
-//     fetch('../../templates/save_card.php', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/x-www-form-urlencoded'
-//         },
-//         body: `frage=${encodeURIComponent(frage)}&antwort=${encodeURIComponent(antwort)}&kategorie=${encodeURIComponent(kategorie)}`
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === "success") {
-//             alert("Flashcard saved!");
-//             location.reload(); // Seite neu laden, damit neue Karte angezeigt wird
-//         } else {
-//             errorEl.classList.remove("hide");
-//             errorEl.textContent = "Error saving card: " + data.message;
-//         }
-//     })
-//     .catch(error => {
-//         errorEl.classList.remove("hide");
-//         errorEl.textContent = "Unexpected error: " + error;
-//     });
-//     })
-// );
 
 // Save Button Event-Listener hinzufügen
 document.getElementById("save-btn").addEventListener("click", submitQuestion);
