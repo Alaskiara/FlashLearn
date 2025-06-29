@@ -11,6 +11,7 @@ $path_prefix = $in_subdirectory ? '../' : '';
   if (isset($_SESSION['username'])): ?>
     <div class="login-info">
       <a class="login-button"><h4>You are logged in as: <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></h4></a>
+      <a class="login-button" href="<?php echo $path_prefix; ?>templates/change_password.php">Change Password</a>
       <a class="login-button" href="<?php echo $path_prefix; ?>templates/logout.php">Logout</a>
     </div>
   <?php elseif ($current_page !== 'login.php' && $current_page !== 'signup.php'): ?>

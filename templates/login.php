@@ -28,12 +28,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         } 
         else 
         {
-            $meldung = "Falsches Passwort.";
+            $meldung = "Wrong Password.";
         }
     } 
     else 
     {
-        $meldung = "Benutzername nicht gefunden.";
+        $meldung = "Username not found.";
     }
 
     $stmt->close();

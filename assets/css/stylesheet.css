@@ -124,6 +124,17 @@ header .header-right {
     display: none;
 }
 
+.login-info .login-button:nth-child(2) {
+    background: linear-gradient(135deg, #4cadaf, #3a9b9c);
+    min-width: 120px;
+    justify-content: center;
+}
+
+.login-info .login-button:nth-child(2):hover {
+    background: linear-gradient(135deg, #3a9b9c, #2e8385);
+    box-shadow: 0 4px 20px rgba(76, 173, 175, 0.4);
+}
+
 .login-info .login-button:last-child {
     background: linear-gradient(135deg, #ff6b6b, #ee5a52);
     min-width: 80px;
@@ -573,7 +584,6 @@ textarea:focus {
 
 .password-change-container h2 {
     text-align: center;
-    color: #004080;
     font-size: 24px;
     margin-bottom: 1.5rem;
 }
@@ -612,8 +622,46 @@ textarea:focus {
 }
 
 .password-form small.error {
-    color: #cc0000;
-    font-size: 14px;
+    color: #ff4444;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.success-message {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #155724;
+}
+
+.success-message p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.back-button-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+    color: white;
+    text-decoration: none;
 }
 
 .welcome-message {
