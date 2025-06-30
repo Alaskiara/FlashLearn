@@ -4,6 +4,7 @@ $path_prefix = $in_subdirectory ? '../' : '';
 ?>
 <link rel="stylesheet" href="<?php echo $path_prefix; ?>assets/css/stylesheet.css">
 <header>
+  <img src="<?php echo $path_prefix; ?>logo.png" alt="FlashLearn Logo" class="logo-image">
   <h1><a href="<?php echo $path_prefix; ?>index.php" class="logo-link">FlashLearn</a></h1>
 
   <?php 

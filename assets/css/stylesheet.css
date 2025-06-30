@@ -29,6 +29,13 @@ header h1 {
     justify-self: center;
 }
 
+.logo-image {
+    height: 50px;
+    grid-column: 1;
+    justify-self: start;
+}
+
+
 header .login-info,
 header .login-button:not(.login-info .login-button),
 header .header-right {
