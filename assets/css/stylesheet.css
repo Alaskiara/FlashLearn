@@ -33,6 +33,9 @@ header h1 {
     height: 50px;
     grid-column: 1;
     justify-self: start;
+    align-self: center;
+    cursor: pointer;
+
 }
 
 
