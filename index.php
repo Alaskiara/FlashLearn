@@ -82,7 +82,7 @@ if (isset($_SESSION['user_id'])) {
                     ?>
                 </div>
             <?php endif; ?>
-
+        <form method="POST" action="templates/sendAnswer.php">
             <div id="card-con">
                 <div class="card-list-container">
                     <?php if (count($flashcards) === 0): ?>
@@ -93,17 +93,32 @@ if (isset($_SESSION['user_id'])) {
                                 <p class="question-div"><?= htmlspecialchars($card['Frage']) ?></p>
 
                                 <a class="show-hide-btn">Show</a>
-                                <p class="answer-div hide"><?= nl2br(htmlspecialchars($card['Antwort'])) ?></p>
+                                <div class="answer-div hide">
+                                    <p class="answer-text"><?= nl2br(htmlspecialchars($card['Antwort'])) ?></p>
+                                        
+                                        <input type="radio" id="true<?= $card['Card_ID'] ?>" name="antwort[<?= $card['Card_ID'] ?>]" value="richtig">
+                                        <label for="true<?= $card['Card_ID'] ?>">correct</label>
 
+                                        <input type="radio" id="false<?= $card['Card_ID'] ?>" name="antwort[<?= $card['Card_ID'] ?>]" value="falsch">
+                                        <label for="false<?= $card['Card_ID'] ?>">wrong</label>
+
+                                        
+                                </div>
                                 <div class="buttons-con">
-                                    <button class="edit"><i class="fa-solid fa-pen-to-square"></i></button>
-                                    <button class="delete"><i class="fa-solid fa-trash-can"></i></button>
+                                    <button type="button" class="edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button type="button" class="delete"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>
+        <?php if(isset($_SESSION['username'])): ?>
+            <div class="add-flashcard-con">
+                <button type="submit" id="submit_btn">send answers</button>
+            </div>
+        <?php endif; ?>
+        </form>
         </div>
 
         <div class="question-container hide" id="add-question-card">
