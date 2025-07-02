@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
     if ($check->num_rows > 0) 
     {
-        $meldung = "Benutzername existiert bereits.";
+        $meldung = "Username is taken.";
     } 
     else 
     {

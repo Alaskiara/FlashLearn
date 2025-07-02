@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION["user_id"])) {
     $antwort = $_POST['antwort'] ?? '';
     $kategorie = $_POST['kategorie'] ?? '';
     $user_id = $_SESSION['user_id'];
-    $points = 0;
+    $points = 1;
 
     if (!empty($frage) && !empty($antwort) && !empty($kategorie)) {
         $sql = "INSERT INTO card (User_ID, Frage, Antwort, points, Kategorie_ID) VALUES (?, ?, ?, ?, ?)";
