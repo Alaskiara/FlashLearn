@@ -29,16 +29,6 @@ header h1 {
     justify-self: center;
 }
 
-.logo-image {
-    height: 50px;
-    grid-column: 1;
-    justify-self: start;
-    align-self: center;
-    cursor: pointer;
-
-}
-
-
 header .login-info,
 header .login-button:not(.login-info .login-button),
 header .header-right {
@@ -115,7 +105,7 @@ header .header-right {
     margin: 0;
 }
 
-.login-info .login-button:first-child {
+.login-info .login-button:nth-child(2) {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -124,13 +114,13 @@ header .header-right {
     box-shadow: none;
 }
 
-.login-info .login-button:first-child:hover {
+.login-info .login-button:nth-child(2):hover {
     transform: none;
     box-shadow: none;
     background: rgba(255, 255, 255, 0.1);
 }
 
-.login-info .login-button:first-child::before {
+.login-info .login-button:nth-child()::before {
     display: none;
 }
 
@@ -903,4 +893,17 @@ textarea:focus {
 #cancel-delete-btn:hover {
     background-color: #5a6268;
     transform: translateY(-1px);
+}
+
+
+.leaderboard-table-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.leaderboard-table {
+    width: 80%;
+    min-width: 600px;
+    font-size: 1.2rem;
 }
